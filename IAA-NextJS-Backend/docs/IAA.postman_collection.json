@@ -1,0 +1,846 @@
+{
+  "info": {
+    "name": "IAA backend 0.2",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000/api/v1"
+    },
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "planningToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "GET /health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      }
+    },
+    {
+      "name": "GET /ready",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/ready"
+      }
+    },
+    {
+      "name": "GET /wp1/home",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/home"
+      }
+    },
+    {
+      "name": "GET /wp1/areas",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/areas"
+      }
+    },
+    {
+      "name": "GET /wp1/areas/{id}/boundary",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/areas/:id/boundary"
+      }
+    },
+    {
+      "name": "GET /wp1/search",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/search"
+      }
+    },
+    {
+      "name": "GET /wp1/features",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/features"
+      }
+    },
+    {
+      "name": "GET /wp1/nearby",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/nearby"
+      }
+    },
+    {
+      "name": "GET /wp1/layers",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/layers"
+      }
+    },
+    {
+      "name": "GET /wp1/layers/{id}/features",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/layers/:id/features"
+      }
+    },
+    {
+      "name": "GET /wp1/projects",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/projects"
+      }
+    },
+    {
+      "name": "GET /wp1/projects/{id}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/projects/:id"
+      }
+    },
+    {
+      "name": "GET /wp1/districts/{id}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/districts/:id"
+      }
+    },
+    {
+      "name": "GET /wp1/districts/{id}/{domain}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/districts/:id/:domain"
+      }
+    },
+    {
+      "name": "POST /wp1/compare",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/compare"
+      }
+    },
+    {
+      "name": "GET /wp1/datasets",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/datasets"
+      }
+    },
+    {
+      "name": "GET /wp1/datasets/{id}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/datasets/:id"
+      }
+    },
+    {
+      "name": "GET /wp1/resources",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/resources"
+      }
+    },
+    {
+      "name": "GET /wp1/policies",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/policies"
+      }
+    },
+    {
+      "name": "GET /wp1/files/{id}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/files/:id"
+      }
+    },
+    {
+      "name": "GET /wp1/exports/{id}/{resource}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp1/exports/:id/:resource"
+      }
+    },
+    {
+      "name": "GET /reference/{kind}",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/reference/:kind"
+      }
+    },
+    {
+      "name": "POST /wp2/estimate-energy",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/wp2/estimate-energy"
+      }
+    },
+    {
+      "name": "GET /wp2/engines",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/wp2/engines"
+      }
+    },
+    {
+      "name": "POST /wp2/assessments",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "url": "{{baseUrl}}/wp2/assessments"
+      }
+    },
+    {
+      "name": "GET /wp2/assessments/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Planning-Token",
+            "value": "{{planningToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp2/assessments/:id"
+      }
+    },
+    {
+      "name": "POST /wp2/assessments/{id}/scenarios",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Planning-Token",
+            "value": "{{planningToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp2/assessments/:id/scenarios"
+      }
+    },
+    {
+      "name": "POST /wp2/assessments/{id}/runs",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-Planning-Token",
+            "value": "{{planningToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp2/assessments/:id/runs"
+      }
+    },
+    {
+      "name": "GET /wp2/assessments/{id}/runs",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Planning-Token",
+            "value": "{{planningToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp2/assessments/:id/runs"
+      }
+    },
+    {
+      "name": "GET /wp2/assessments/{id}/report",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Planning-Token",
+            "value": "{{planningToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp2/assessments/:id/report"
+      }
+    },
+    {
+      "name": "GET /auth/me",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/auth/me"
+      }
+    },
+    {
+      "name": "GET /internal/projects",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/internal/projects"
+      }
+    },
+    {
+      "name": "POST /internal/projects",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/internal/projects"
+      }
+    },
+    {
+      "name": "GET /internal/projects/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/internal/projects/:id"
+      }
+    },
+    {
+      "name": "GET /internal/profiles/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/internal/profiles/:id"
+      }
+    },
+    {
+      "name": "PATCH /internal/profiles/{id}",
+      "request": {
+        "method": "PATCH",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/internal/profiles/:id"
+      }
+    },
+    {
+      "name": "POST /internal/profiles/{id}/notes",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/internal/profiles/:id/notes"
+      }
+    },
+    {
+      "name": "POST /internal/profiles/{id}/transition",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/internal/profiles/:id/transition"
+      }
+    },
+    {
+      "name": "POST /internal/profiles/{id}/revise",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/internal/profiles/:id/revise"
+      }
+    },
+    {
+      "name": "POST /files",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/files"
+      }
+    },
+    {
+      "name": "GET /files/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/files/:id"
+      }
+    },
+    {
+      "name": "POST /files/{id}/review",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/files/:id/review"
+      }
+    },
+    {
+      "name": "GET /admin/users",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/users"
+      }
+    },
+    {
+      "name": "POST /admin/users",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/users"
+      }
+    },
+    {
+      "name": "POST /admin/users/{id}/deactivate",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/users/:id/deactivate"
+      }
+    },
+    {
+      "name": "POST /admin/projects/{id}/memberships",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/projects/:id/memberships"
+      }
+    },
+    {
+      "name": "GET /admin/audit",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/audit"
+      }
+    },
+    {
+      "name": "POST /admin/reminders",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/reminders"
+      }
+    },
+    {
+      "name": "POST /admin/datasets/{id}/transition",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/datasets/:id/transition"
+      }
+    },
+    {
+      "name": "POST /admin/definitions/{kind}/{id}",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/definitions/:kind/:id"
+      }
+    },
+    {
+      "name": "POST /admin/imports",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/imports"
+      }
+    },
+    {
+      "name": "GET /admin/imports/{id}/rows",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/imports/:id/rows"
+      }
+    },
+    {
+      "name": "POST /admin/issues/{id}/resolve",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/admin/issues/:id/resolve"
+      }
+    },
+    {
+      "name": "GET /manage/resources",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/manage/resources"
+      }
+    },
+    {
+      "name": "GET /wp3/projects/{id}/obligations",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/projects/:id/obligations"
+      }
+    },
+    {
+      "name": "GET /wp3/projects/{id}/dashboard",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/projects/:id/dashboard"
+      }
+    },
+    {
+      "name": "GET /wp3/obligations/{id}/form",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/obligations/:id/form"
+      }
+    },
+    {
+      "name": "POST /wp3/submissions",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions"
+      }
+    },
+    {
+      "name": "GET /wp3/submissions/{id}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions/:id"
+      }
+    },
+    {
+      "name": "PUT /wp3/submissions/{id}/values",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions/:id/values"
+      }
+    },
+    {
+      "name": "POST /wp3/submissions/{id}/validate",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions/:id/validate"
+      }
+    },
+    {
+      "name": "POST /wp3/submissions/{id}/transition",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions/:id/transition"
+      }
+    },
+    {
+      "name": "POST /wp3/submissions/{id}/correct",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions/:id/correct"
+      }
+    },
+    {
+      "name": "POST /wp3/submissions/{id}/release",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions/:id/release"
+      }
+    },
+    {
+      "name": "GET /wp3/submissions/{id}/history",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions/:id/history"
+      }
+    },
+    {
+      "name": "GET /wp3/submissions/{id}/records/{kind}",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions/:id/records/:kind"
+      }
+    },
+    {
+      "name": "POST /wp3/submissions/{id}/records/{kind}",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions/:id/records/:kind"
+      }
+    },
+    {
+      "name": "DELETE /wp3/submissions/{id}/records/{kind}/{recordId}",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/wp3/submissions/:id/records/:kind/:recordId"
+      }
+    },
+    {
+      "name": "GET /queries",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/queries"
+      }
+    },
+    {
+      "name": "POST /queries",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/queries"
+      }
+    },
+    {
+      "name": "POST /queries/{id}/answer",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/queries/:id/answer"
+      }
+    },
+    {
+      "name": "GET /notifications",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/notifications"
+      }
+    },
+    {
+      "name": "POST /notifications/{id}/read",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": "{{baseUrl}}/notifications/:id/read"
+      }
+    }
+  ]
+}

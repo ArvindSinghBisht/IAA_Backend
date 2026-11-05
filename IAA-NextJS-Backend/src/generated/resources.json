@@ -1,0 +1,4632 @@
+{
+  "core.organisations": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "organisation_type": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "parent_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "is_active": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "core.units": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "dimension": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "canonical_factor": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "context": {
+        "type": "jsonb",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "core.seasons": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "is_total": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "core.crops": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "category": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "is_aggregate": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "parent_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.crops"
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "core.models": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "kind": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "agrivoltaics",
+          "system_typology",
+          "land_ownership",
+          "project_ownership"
+        ]
+      },
+      "description": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "core.practices": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "category": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "core.locales": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "is_enabled": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "core.translations": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "locale_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.locales"
+      },
+      "translation_key": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "translated_text": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "geo.areas": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code_system": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "level": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "country",
+          "state",
+          "district",
+          "subdistrict",
+          "village",
+          "city"
+        ]
+      },
+      "parent_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "valid_from": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "valid_to": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "data.sources": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "organisation_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "source_uri": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "licence": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "rights_notes": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "contact_reference": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "data.datasets": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "source_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.sources"
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "title": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "domain_no": {
+        "type": "smallint",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "update_frequency": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "spatial_resolution": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "is_active": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "data.dataset_versions": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.datasets"
+      },
+      "file_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.files"
+      },
+      "version_label": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "received_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "reference_start": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "reference_end": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "source_crs": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "source_units": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "coverage_notes": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "limitations": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "status": {
+        "type": "text",
+        "required": false,
+        "nullable": false,
+        "default": true,
+        "enum": [
+          "draft",
+          "review",
+          "approved",
+          "rejected",
+          "retired"
+        ]
+      },
+      "is_demo": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "is_current": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "public_allowed": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "planning_allowed": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "export_allowed": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "approved_by": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "iaa_auth.users"
+      },
+      "approved_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "supersedes_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "data.coverage": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.datasets"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "version_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "coverage_status": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "missing",
+          "partial",
+          "available",
+          "stale",
+          "blocked"
+        ]
+      },
+      "required_resolution": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "notes": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "data.collection_tasks": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "provider_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "owner_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "dataset_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.datasets"
+      },
+      "requested_data": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "status": {
+        "type": "text",
+        "required": false,
+        "nullable": false,
+        "default": true,
+        "enum": [
+          "not_started",
+          "requested",
+          "in_progress",
+          "received",
+          "validated",
+          "blocked"
+        ]
+      },
+      "due_date": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "notes": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "geo.boundaries": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "valid_from": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "valid_to": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "geom": {
+        "type": "geometry(MultiPolygon,4326)",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "geo.layers": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "file_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.files"
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "layer_type": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "vector",
+          "raster",
+          "table"
+        ]
+      },
+      "geometry_type": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "style": {
+        "type": "jsonb",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "legend": {
+        "type": "jsonb",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "tile_service_reference": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "geo.features": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "layer_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.layers"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "source_feature_key": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "geom": {
+        "type": "geometry(Geometry,4326)",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "attributes": {
+        "type": "jsonb",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.land_statistics": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "unit_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.units"
+      },
+      "source_state": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "source_district": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "agricultural_year": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "row_kind": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "district",
+          "state_total"
+        ]
+      },
+      "reporting_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "forest_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "non_agricultural_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "barren_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "non_cultivable_total": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "pasture_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "tree_crop_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "culturable_waste_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "other_uncultivated_total": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "other_fallow_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "current_fallow_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "fallow_total": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "net_sown_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "gross_cropped_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "multi_sown_area": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.crop_production": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "crop_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.crops"
+      },
+      "season_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.seasons"
+      },
+      "unit_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.units"
+      },
+      "agricultural_year": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "production": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "source_value": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "value_status": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "numeric",
+          "included_in_rabi",
+          "included_in_kharif",
+          "not_reported",
+          "non_numeric"
+        ]
+      },
+      "source_page": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "source_crop_number": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "unit_context": {
+        "type": "jsonb",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "notes": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.facilities": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "facility_type": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "operator_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.facility_versions": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "facility_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "wp1.facilities"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "geocode_review_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "geo.geocoding_reviews"
+      },
+      "capacity_unit_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.units"
+      },
+      "source_state": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "source_district": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "city": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "address": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "point": {
+        "type": "geometry(Point,4326)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "location_accuracy": {
+        "type": "text",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "established_year": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "source_area_text": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "area_ha": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "capacity_value": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "operational_status": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "as_of_date": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.substations": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "discom_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.substation_versions": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "substation_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "wp1.substations"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "point": {
+        "type": "geometry(Point,4326)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "high_voltage_kv": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "low_voltage_kv": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "capacity_mva": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "loading_pct": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "observed_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.feeders": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "discom_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "source_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.feeder_versions": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "feeder_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "wp1.feeders"
+      },
+      "substation_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "wp1.substations"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "point": {
+        "type": "geometry(Point,4326)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "line_geom": {
+        "type": "geometry(MultiLineString,4326)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "voltage_kv": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "sanctioned_mw": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "peak_load_mw": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "approved_hosting_mw": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "saidi_minutes": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "saifi_count": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "reference_start": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "reference_end": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "outage_threshold_minutes": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "method_reference": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.feeder_load_readings": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "feeder_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "wp1.feeders"
+      },
+      "observed_at": {
+        "type": "timestamptz",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "load_mw": {
+        "type": "numeric",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "quality_flag": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "interval_minutes": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.solar_installations": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "installation_type": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "owner_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.solar_installation_versions": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "installation_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "wp1.solar_installations"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "point": {
+        "type": "geometry(Point,4326)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "footprint": {
+        "type": "geometry(MultiPolygon,4326)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "capacity_dc_mwp": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "capacity_ac_mw": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "clearance_m": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "row_pitch_m": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "layout_type": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "land_rights_status": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "operational_status": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "as_of_date": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.environment_observations": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "unit_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.units"
+      },
+      "metric_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "category_code": {
+        "type": "text",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "period_start": {
+        "type": "date",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "period_end": {
+        "type": "date",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "value": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "value_status": {
+        "type": "text",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "resolution": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "method_reference": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "point": {
+        "type": "geometry(Point,4326)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.agro_zones": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "geom": {
+        "type": "geometry(MultiPolygon,4326)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "rainfall_band": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "temperature_band": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "notes": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.crop_suitability": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "crop_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.crops"
+      },
+      "season_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.seasons"
+      },
+      "zone_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "wp1.agro_zones"
+      },
+      "shade_tolerance_pct": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "minimum_dli": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "growth_days": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "sowing_window": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "harvest_window": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "irrigation_requirement": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "method_reference": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.irrigation_statistics": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "unit_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.units"
+      },
+      "period_label": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "water_source": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "irrigation_method": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "value": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "wp1.land_parcels": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "source_parcel_key": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "geom": {
+        "type": "geometry(MultiPolygon,4326)",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "area_ha": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "land_use": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "slope_degrees": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "soil_type": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "rights_status": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "constraints": {
+        "type": "jsonb",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "content.resources": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "resource_type": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "theme": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "content.resource_versions": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "resource_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "content.resources"
+      },
+      "locale_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.locales"
+      },
+      "file_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.files"
+      },
+      "title": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "body": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "external_uri": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "published_date": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "content.resource_areas": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "resource_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "content.resources"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "content.policies": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "kind": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "policy",
+          "scheme"
+        ]
+      },
+      "issuer_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "content.policy_versions": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "source_record_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.source_records"
+      },
+      "policy_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "content.policies"
+      },
+      "file_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.files"
+      },
+      "effective_from": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "effective_to": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "status": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "eligibility": {
+        "type": "jsonb",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "benefits": {
+        "type": "jsonb",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "summary": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "review_due": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "content.policy_areas": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "policy_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "content.policy_versions"
+      },
+      "area_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "geo.areas"
+      },
+      "zone_geom": {
+        "type": "geometry(MultiPolygon,4326)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "project.partners": {
+    "scope": "profile",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "project_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "project.versions"
+      },
+      "organisation_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "partner_role": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "project.land_uses": {
+    "scope": "profile",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "project_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "project.versions"
+      },
+      "use_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "area_ha": {
+        "type": "numeric",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "overlap_group": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "notes": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "project.designs": {
+    "scope": "profile",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "project_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "project.versions"
+      },
+      "array_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "module_technology": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "module_power_wp": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "module_count": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "module_width_m": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "module_length_m": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "transparency_pct": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "mounting_type": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "clearance_m": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "row_pitch_m": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "column_spacing_m": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "tilt_degrees": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "azimuth_degrees": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "tracking_type": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "tracking_manufacturer": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "piling_type": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "piling_material": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "project.grid_connections": {
+    "scope": "profile",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "project_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "project.versions"
+      },
+      "feeder_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "wp1.feeders"
+      },
+      "substation_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "wp1.substations"
+      },
+      "discom_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "connection_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "voltage_kv": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "export_limit_mw": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "metering_policy": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "tariff_inr_kwh": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "tariff_category": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "valid_from": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "valid_to": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "substation_distance_km": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "distance_method": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "approval_file_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.files"
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "project.crop_plans": {
+    "scope": "profile",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "project_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "project.versions"
+      },
+      "crop_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.crops"
+      },
+      "season_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.seasons"
+      },
+      "plot_code": {
+        "type": "text",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "agricultural_year": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "area_ha": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "sowing_date": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "harvest_date": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "water_source": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "irrigation_method": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "selection_rationale": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "project.profile_notes": {
+    "scope": "profile",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "project_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "project.versions"
+      },
+      "field_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "section_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "narrative": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "visibility": {
+        "type": "text",
+        "required": false,
+        "nullable": false,
+        "default": true,
+        "enum": [
+          "public",
+          "restricted"
+        ]
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "project.documents": {
+    "scope": "profile",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "project_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "project.versions"
+      },
+      "file_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.files"
+      },
+      "category": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "caption": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "public_allowed": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "plan.methods": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "function_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "suitability",
+          "grid",
+          "model",
+          "market",
+          "scheme",
+          "retrofit",
+          "shading",
+          "finance",
+          "monitoring"
+        ]
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "plan.method_versions": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "method_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "plan.methods"
+      },
+      "version_label": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "configuration": {
+        "type": "jsonb",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "code_digest": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "status": {
+        "type": "text",
+        "required": false,
+        "nullable": false,
+        "default": true,
+        "enum": [
+          "draft",
+          "approved",
+          "retired"
+        ]
+      },
+      "approved_by": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "iaa_auth.users"
+      },
+      "approved_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "limitations": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "plan.criteria": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "method_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "plan.method_versions"
+      },
+      "unit_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.units"
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "weight": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "normalisation": {
+        "type": "jsonb",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "exclusion_rule": {
+        "type": "jsonb",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "missing_action": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "withhold",
+          "flag",
+          "approved_renormalisation"
+        ]
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.periods": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "season_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.seasons"
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "kind": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "quarterly",
+          "seasonal",
+          "annual",
+          "monthly"
+        ]
+      },
+      "start_date": {
+        "type": "date",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "end_date": {
+        "type": "date",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "calendar_basis": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.indicators": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "domain": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "energy",
+          "agriculture",
+          "income",
+          "land",
+          "nature",
+          "inclusion",
+          "progress"
+        ]
+      },
+      "aggregation": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "sum",
+          "weighted_ratio",
+          "latest",
+          "distinct_count",
+          "non_additive"
+        ]
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.indicator_versions": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "indicator_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.indicators"
+      },
+      "unit_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.units"
+      },
+      "method_version_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "plan.method_versions"
+      },
+      "version": {
+        "type": "integer",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "value_type": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "number",
+          "text",
+          "boolean",
+          "date",
+          "choice",
+          "json"
+        ]
+      },
+      "validation": {
+        "type": "jsonb",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "frequency": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "is_sensitive": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "approved_by": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "iaa_auth.users"
+      },
+      "approved_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.form_versions": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "version": {
+        "type": "integer",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "name": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "status": {
+        "type": "text",
+        "required": false,
+        "nullable": false,
+        "default": true,
+        "enum": [
+          "draft",
+          "approved",
+          "retired"
+        ]
+      },
+      "approved_by": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "iaa_auth.users"
+      },
+      "approved_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.form_fields": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "form_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.form_versions"
+      },
+      "indicator_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.indicator_versions"
+      },
+      "section_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "field_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "sort_order": {
+        "type": "integer",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "required": {
+        "type": "boolean",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "repeat_group": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "visibility_rule": {
+        "type": "jsonb",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "label_key": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.obligations": {
+    "scope": "project",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "project_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "project.projects"
+      },
+      "period_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.periods"
+      },
+      "form_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.form_versions"
+      },
+      "assigned_to": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "iaa_auth.users"
+      },
+      "reporting_stream": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "due_at": {
+        "type": "timestamptz",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "waived_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "waiver_reason": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.energy_records": {
+    "scope": "submission",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "submission_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.submission_versions"
+      },
+      "segment_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "start_at": {
+        "type": "timestamptz",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "end_at": {
+        "type": "timestamptz",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "generation_mwh": {
+        "type": "numeric",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "export_mwh": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "onsite_mwh": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "capacity_dc_mwp": {
+        "type": "numeric",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "capacity_ac_mw": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "operational_hours": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "reference_hours": {
+        "type": "numeric",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "meter_reference": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.baselines": {
+    "scope": "project",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "project_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "project.projects"
+      },
+      "crop_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.crops"
+      },
+      "period_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.periods"
+      },
+      "source_file_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.files"
+      },
+      "dataset_version_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "data.dataset_versions"
+      },
+      "method_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "plan.method_versions"
+      },
+      "plot_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "baseline_type": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "control_plot",
+          "regional",
+          "historical"
+        ]
+      },
+      "yield_t_ha": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "area_ha": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "source_reference": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "comparability_notes": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.harvest_records": {
+    "scope": "submission",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "submission_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.submission_versions"
+      },
+      "crop_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.crops"
+      },
+      "season_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.seasons"
+      },
+      "baseline_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "mon.baselines"
+      },
+      "plot_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "harvest_date": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "cultivated_area_ha": {
+        "type": "numeric",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "production_t": {
+        "type": "numeric",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "cultivation_cost_inr": {
+        "type": "numeric(20,2)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "crop_failure_note": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.beneficiaries": {
+    "scope": "admin",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "organisation_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.organisations"
+      },
+      "pseudonym": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "gender": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "birth_year": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "household_code": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "consent_reference": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "retired_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.project_beneficiaries": {
+    "scope": "project",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "project_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "project.projects"
+      },
+      "beneficiary_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.beneficiaries"
+      },
+      "role": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "start_date": {
+        "type": "date",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "end_date": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "land_area_ha": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.participation_records": {
+    "scope": "submission",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "submission_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.submission_versions"
+      },
+      "beneficiary_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.beneficiaries"
+      },
+      "role": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "gender_at_period": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "age_at_period": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "is_youth": {
+        "type": "boolean",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "participation_days": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "job_phase": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "enum": [
+          "construction",
+          "operation",
+          "agriculture",
+          "other"
+        ]
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.inclusion_totals": {
+    "scope": "submission",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "submission_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.submission_versions"
+      },
+      "population_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "women": {
+        "type": "integer",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "men": {
+        "type": "integer",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "other_gender": {
+        "type": "integer",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "gender_unknown": {
+        "type": "integer",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "youth": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "households": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "count_basis": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.income_records": {
+    "scope": "submission",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "submission_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.submission_versions"
+      },
+      "scope_kind": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "project",
+          "fpo",
+          "household"
+        ]
+      },
+      "scope_key": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "component": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "amount_inr": {
+        "type": "numeric(20,2)",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "accounting_basis": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "gross_receipt",
+          "expense",
+          "net_income",
+          "transfer"
+        ]
+      },
+      "source_reference": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.land_records": {
+    "scope": "submission",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "submission_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.submission_versions"
+      },
+      "plot_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "site_area_ha": {
+        "type": "numeric",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "solar_area_ha": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "cultivated_area_ha": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "notes": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.practice_records": {
+    "scope": "submission",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "submission_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.submission_versions"
+      },
+      "practice_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "core.practices"
+      },
+      "plot_code": {
+        "type": "text",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "adoption_status": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "enum": [
+          "adopted",
+          "not_adopted",
+          "unknown",
+          "not_applicable"
+        ]
+      },
+      "measured_value": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "unit_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "core.units"
+      },
+      "notes": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.scheme_linkages": {
+    "scope": "submission",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "submission_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.submission_versions"
+      },
+      "policy_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "content.policy_versions"
+      },
+      "reference_number": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "status": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "benefit_inr": {
+        "type": "numeric(20,2)",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "beneficiaries_count": {
+        "type": "integer",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.progress_records": {
+    "scope": "submission",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "submission_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.submission_versions"
+      },
+      "milestone_code": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "planned_date": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "actual_date": {
+        "type": "date",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "completion_pct": {
+        "type": "numeric",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "status": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "note": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  },
+  "mon.evidence": {
+    "scope": "submission",
+    "columns": {
+      "id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": false,
+        "default": true
+      },
+      "submission_version_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "mon.submission_versions"
+      },
+      "file_id": {
+        "type": "uuid",
+        "required": true,
+        "nullable": false,
+        "default": false,
+        "references": "data.files"
+      },
+      "indicator_version_id": {
+        "type": "uuid",
+        "required": false,
+        "nullable": true,
+        "default": false,
+        "references": "mon.indicator_versions"
+      },
+      "record_path": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "category": {
+        "type": "text",
+        "required": true,
+        "nullable": false,
+        "default": false
+      },
+      "caption": {
+        "type": "text",
+        "required": false,
+        "nullable": true,
+        "default": false
+      },
+      "created_at": {
+        "type": "timestamptz",
+        "required": false,
+        "nullable": false,
+        "default": true
+      }
+    }
+  }
+}

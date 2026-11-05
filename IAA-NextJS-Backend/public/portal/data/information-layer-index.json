@@ -1,0 +1,156 @@
+{
+  "title": "IAA Information Layer \u2014 Drive raw pack index",
+  "source": "https://drive.google.com/file/d/1_TNz5FvDH5QF0wl2V-nuqAewZ3W7-dxe/view",
+  "sourceFile": "Information-Layer.zip",
+  "fileCount": 107,
+  "domains": [
+    {
+      "name": "Market Access & Value Chains",
+      "wp1Domain": "Market Access & Value Chains",
+      "fileCount": 26,
+      "sampleFiles": [
+        "Market Access & Value Chains/APMC mandis/india-mandi-directory.csv",
+        "Market Access & Value Chains/FPO aggregation hubs/List of FPOs in the State of Telangana.pdf",
+        "Market Access & Value Chains/FPO aggregation hubs/List of FPOs in the State of Gujarat.pdf",
+        "Market Access & Value Chains/FPO aggregation hubs/List of FPOs in the State of West Bengal.pdf",
+        "Market Access & Value Chains/FPO aggregation hubs/List of FPOs in the State of Chhattisgarh.pdf",
+        "Market Access & Value Chains/FPO aggregation hubs/List of FPOs in the State of Goa.pdf",
+        "Market Access & Value Chains/FPO aggregation hubs/List of FPOs in the State of Maharashtra.pdf",
+        "Market Access & Value Chains/FPO aggregation hubs/List-of-FPOs-in-the-State-of-Karnataka.pdf"
+      ],
+      "feeds": "WP1 showcase; WP2 planning drivers when structured"
+    },
+    {
+      "name": "Grid & Feeder Readiness",
+      "wp1Domain": "Grid & Feeder Readiness",
+      "fileCount": 20,
+      "sampleFiles": [
+        "Substations/Uttarakhand/uttarakhand substations.xlsx",
+        "Substations/Himachal Pradesh/Project-Commissioned-upto-31.12.2024.pdf",
+        "Substations/Kerala/substation-list.pdf",
+        "Substations/Bihar/132-33KV-19417.pdf",
+        "Substations/Assam/Sub_Stations_UAR.pdf",
+        "Substations/Himachal Pradesh/esd_132.pdf",
+        "Substations/Chhattisgarh/Existing_substation_Latest.pdf",
+        "Substations/Andhrapradesh/3311-kv-sub-stations.xls"
+      ],
+      "feeds": "WP1 showcase; WP2 planning drivers when structured"
+    },
+    {
+      "name": "Productive-Use & Livelihood Hotspots",
+      "wp1Domain": "Productive Use & Livelihoods",
+      "fileCount": 16,
+      "sampleFiles": [
+        "Post-harvest processing clusters/Sector profiles/Sector_profile_Meat_Poultry_(1)22.pdf",
+        "Post-harvest processing clusters/State profiles/Andaman_Nicobar (1).pdf",
+        "Post-harvest processing clusters/State profiles/Delhi.pdf",
+        "Post-harvest processing clusters/State profiles/Himachal_Pradesh.pdf",
+        "Post-harvest processing clusters/State profiles/Odisha.pdf",
+        "Productive-Use & Livelihood Hotspots/Livestock density zones/BrochureOf21stLivestockCensus.pdf",
+        "Post-harvest processing clusters/State profiles/Mizoram.pdf",
+        "Post-harvest processing clusters/State profiles/Lakshadweep.pdf"
+      ],
+      "feeds": "WP1 showcase; WP2 planning drivers when structured"
+    },
+    {
+      "name": "Solar Resource & RE Infrastructure",
+      "wp1Domain": "Solar Resource & RE Infrastructure",
+      "fileCount": 15,
+      "sampleFiles": [
+        "RE clusters/Estimated Renewable Energy Potential/Estimated_Renewable_Energy_Potential_As_On_15th_April_2013.csv",
+        "RE clusters/Solar off grid capacity/spv-installation_0.csv",
+        "RE clusters/State-wise Potential of Various Renewable Energy Technologies/State-wise_Potential_of_Various_Renewable_Energy_Technologies_1.xls",
+        "RE clusters/Estimated Renewable Energy Potential/estimated-potential.csv",
+        "Solar Resource & RE Infrastructure/Solar parks/RS_Session_267_AU_2851_A_and_B.csv",
+        "Solar Resource & RE Infrastructure/Solar parks/RS_Session_267_AU_3498_A_and_B.i.csv",
+        "RE clusters/State-wise Potential of Various Renewable Energy Technologies/State-potential.csv",
+        "Solar Resource & RE Infrastructure/Solar irradiance/Major_Cities_monthly_July_2026-2027.xlsx"
+      ],
+      "feeds": "WP1 showcase; WP2 planning drivers when structured"
+    },
+    {
+      "name": "Cropping & Seasonal Learning",
+      "wp1Domain": "Cropping & Seasonal Learning",
+      "fileCount": 14,
+      "sampleFiles": [
+        "Directional yield, productivity trends/Estimate of Production of Food Grains/Time-Series-2nd-AE-2025-26-English-1.pdf",
+        "Directional yield, productivity trends/Area under crop/1998 -1999.xls",
+        "Directional yield, productivity trends/Area under crop/2021-22.xls",
+        "Directional yield, productivity trends/Area under crop/2012 - 13.xls",
+        "Directional yield, productivity trends/Area under crop/2017 - 18.xls",
+        "Directional yield, productivity trends/Area under crop/2011 - 12.xls",
+        "Directional yield, productivity trends/Area under crop/2014 - 15.xls",
+        "Directional yield, productivity trends/Area under crop/2006 - 07.xls"
+      ],
+      "feeds": "WP1 showcase; WP2 planning drivers when structured"
+    },
+    {
+      "name": "Policy, Subsidy & Scheme Convergence",
+      "wp1Domain": "Policy, Subsidy & Scheme Convergence",
+      "fileCount": 10,
+      "sampleFiles": [
+        "Policy, Subsidy & Scheme Convergence/State RE Policies/Telangana_Solar_Power_Policy_2015.pdf",
+        "Policy, Subsidy & Scheme Convergence/State RE Policies/MIZORAM RENEWB_E ENRGY POLICY.pdf",
+        "Policy, Subsidy & Scheme Convergence/State RE Policies/AP_Solar_Power_Policy_2018.pdf",
+        "Policy, Subsidy & Scheme Convergence/State RE Policies/Uttar_Pradesh_Solar_Energy_Policy2022_English.pdf",
+        "Centre/SCHEMES/Amendment to the Scheme for Flexibility in Generation and Scheduling of Thermal, Hydro Power Stations through bundling with RE and Storage Power.pdf",
+        "Policy, Subsidy & Scheme Convergence/PM KUSUM Status/Renewable energy Statistics.pdf",
+        "Policy, Subsidy & Scheme Convergence/State RE Policies/Himachal Pradesh Energy Policy 2021.pdf",
+        "Policy, Subsidy & Scheme Convergence/State RE Policies/Maharastra Renewable energy policy.pdf"
+      ],
+      "feeds": "WP1 showcase; WP2 planning drivers when structured"
+    },
+    {
+      "name": "Land & Regional Suitability",
+      "wp1Domain": "Land & Regional Suitability",
+      "fileCount": 2,
+      "sampleFiles": [
+        "Land use or land cover/agri or net sown area/Agricultural land (_ of land area).xls",
+        "Land use or land cover/Forests/isfr_book_eng-vol-1_2023.pdf"
+      ],
+      "feeds": "WP1 showcase; WP2 planning drivers when structured"
+    },
+    {
+      "name": "Agrivoltaics Site Registry",
+      "wp1Domain": "Agrivoltaics Site Registry",
+      "fileCount": 2,
+      "sampleFiles": [
+        "Agrivoltaics Site Registry/Existing Agrivoltaics sites/AgriPV_Sites_India.kml",
+        "Agrivoltaics Site Registry/Existing Agrivoltaics sites/files.zip"
+      ],
+      "feeds": "WP1 showcase; WP2 planning drivers when structured"
+    },
+    {
+      "name": "Project input template",
+      "wp1Domain": "Agrivoltaics Site Registry",
+      "fileCount": 1,
+      "sampleFiles": [
+        "Information Layer/INFO LAYER/Agrivoltaics Project Details Templete (1).xlsx"
+      ],
+      "feeds": "WP1 showcase; WP2 planning drivers when structured"
+    },
+    {
+      "name": "Layer 1 Data Tracker",
+      "wp1Domain": "Learning & Query Intelligence",
+      "fileCount": 1,
+      "sampleFiles": [
+        "Information Layer/IAA_Layer1_Data_Tracker.xlsx"
+      ],
+      "feeds": "WP1 showcase; WP2 planning drivers when structured"
+    }
+  ],
+  "workPackages": {
+    "WP1": {
+      "name": "Information Explorer",
+      "purpose": "Showcase all raw Information Layer data \u2014 crops, feeders, substations, projects, livestock, markets, policy and more."
+    },
+    "WP2": {
+      "name": "Farm planning",
+      "purpose": "Drive useful planning from that raw data using Indian farm-to-consumer knowledge: field & cost, suitable crops, shade impact of solar, nearest mandi/cold store/feeder/substation, and downloadable reports."
+    },
+    "WP3": {
+      "name": "Monitoring & administration",
+      "purpose": "Project users submit seasonal/quarterly updates; IAA reviewers approve/return; management analytics from approved records; system admins manage data/roles. Statuses: draft \u2192 submitted \u2192 returned \u2192 approved / published."
+    }
+  }
+}

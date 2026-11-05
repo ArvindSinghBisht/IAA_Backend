@@ -1,0 +1,23 @@
+{
+  "date": "2026-11-03",
+  "version": "0.2.0",
+  "unit_tests": {
+    "passed": 26,
+    "failed": 0
+  },
+  "typecheck": "passed",
+  "production_build": "passed",
+  "sql_migrations_parsed": 6,
+  "static_service_queries_syntax_parsed": 156,
+  "previous_migrations_001_004": "byte-identical to preceding extended ZIP",
+  "postgis_lifecycle_test": "provided; skipped here without INTEGRATION_ADMIN_URL",
+  "live_neon_migrations": "not run",
+  "live_oidc_end_to_end": "not run",
+  "source_specific_74_field_dictionary": "not independently verified",
+  "scope": {
+    "canonical_baseline_tables": 116,
+    "allowlisted_resource_definitions": 68,
+    "explicit_route_index_entries": 73
+  },
+  "handover": "START_HERE.md"
+}

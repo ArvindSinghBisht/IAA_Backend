@@ -1,0 +1,28 @@
+{
+  "date": "2026-11-03",
+  "node": "24.22.1",
+  "typecheck": "passed",
+  "unit_and_route_tests": 12,
+  "tests_passed": 12,
+  "production_build": "passed",
+  "database_migrations": "not executed against Neon",
+  "identity_provider_integration": "not tested against live provider",
+  "frontend_api_wiring": "not implemented",
+  "installed_packages": {
+    "dotenv": "17.4.2",
+    "jose": "6.2.15",
+    "next": "16.4.4",
+    "pg": "8.23.1",
+    "pino": "10.4.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "zod": "4.6.7"
+  },
+  "neon_connection": {
+    "attempted": true,
+    "connected": false,
+    "error": "EAI_AGAIN: hostname resolution unavailable",
+    "remote_changes": "none"
+  },
+  "auth_schema_fix": "auth SQL namespace moved to iaa_auth; managed auth not modified"
+}
