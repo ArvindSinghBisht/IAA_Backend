@@ -1,0 +1,38 @@
+import { z } from "zod";
+export const energyInput = z
+  .object({
+    capacityDcMwp: z.number().positive().max(10000),
+    specificYieldKwhPerKwpYear: z.number().positive().max(4000),
+    referenceHours: z.number().positive().max(8784).default(8760),
+  })
+  .strict();
+export function estimateEnergy(input: unknown) {
+  const p = energyInput.parse(input),
+    generationMwh = p.capacityDcMwp * p.specificYieldKwhPerKwpYear;
+  return {
+    status: "indicative",
+    method: "user-supplied-specific-yield-v1",
+    inputs: p,
+    generationMwh,
+    capacityFactorPct:
+      (generationMwh / (p.capacityDcMwp * p.referenceHours)) * 100,
+    limitations:
+      "Annual arithmetic estimate from user-supplied specific yield; no weather, shading, loss or hosting study has been performed.",
+  };
+}
+export const cufInput = z
+  .object({
+    generationMwh: z.number().nonnegative(),
+    capacityMwp: z.number().positive(),
+    referenceHours: z.number().positive(),
+  })
+  .strict();
+export function cuf(input: unknown) {
+  const p = cufInput.parse(input);
+  return {
+    capacityFactorPct:
+      (100 * p.generationMwh) / (p.capacityMwp * p.referenceHours),
+    capacityBasis: "DC",
+    referenceHours: p.referenceHours,
+  };
+}

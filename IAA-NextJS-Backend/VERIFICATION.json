@@ -1,0 +1,31 @@
+{
+  "date": "2026-11-06",
+  "version": "0.3.0",
+  "tests": {
+    "passed": 36,
+    "failed": 0,
+    "skipped": 0,
+    "includes": "unit, architecture, routes, embedded PostGIS lifecycle, local JWKS JWT integration"
+  },
+  "format_check": "passed",
+  "typecheck": "passed",
+  "production_build": "passed",
+  "standalone_http_checks": {
+    "passed": 12,
+    "configuration": "intentionally empty database/OIDC credentials; unavailable services return 503"
+  },
+  "migrations": {
+    "executed_in_embedded_postgis": 6,
+    "files_changed": 0,
+    "all_match_uploaded_source": true
+  },
+  "api": {
+    "explicit_operations": 82,
+    "native_route_modules": 74,
+    "resource_families": 68
+  },
+  "live_neon": "not accessed or modified",
+  "live_identity_provider": "not accessed; local JWKS integration passed",
+  "native_hosting_load_and_concurrency": "requires staging acceptance",
+  "handover": "START_HERE.md and docs/PROFESSIONAL_BACKEND.md"
+}

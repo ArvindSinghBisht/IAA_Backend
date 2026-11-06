@@ -1,0 +1,277 @@
+import { createHash } from "node:crypto";
+import { z } from "zod";
+const finite = z.number().finite();
+export const implementations = [
+  "weighted-score-v1",
+  "hosting-check-v1",
+  "model-rules-v1",
+  "eligibility-rules-v1",
+  "retrofit-checks-v1",
+  "row-shadow-v1",
+  "discounted-cashflow-v1",
+  "market-distance-v1",
+] as const;
+export function implementationDigest(name: string) {
+  return createHash("sha256")
+    .update("iaa-engine-2:" + name)
+    .digest("hex");
+}
+export type EngineResult = {
+  status: "indicative" | "cannot_assess";
+  result: Record<string, unknown>;
+  explanation: string;
+  score?: number;
+};
+const missing = (explanation: string): EngineResult => ({
+  status: "cannot_assess",
+  result: {},
+  explanation,
+});
+const scalar = z.union([z.string(), z.number(), z.boolean()]);
+const rule = z
+  .object({
+    field: z.string().max(100),
+    op: z.enum(["eq", "gte", "lte", "in"]),
+    value: z.union([scalar, z.array(scalar)]),
+  })
+  .strict();
+function matches(r: z.infer<typeof rule>, input: Record<string, unknown>) {
+  const v = input[r.field];
+  if (v === undefined || v === null) return null;
+  if (r.op === "eq") return v === r.value;
+  if (r.op === "in")
+    return (
+      Array.isArray(r.value) && r.value.includes(v as string | number | boolean)
+    );
+  if (typeof v !== "number" || typeof r.value !== "number") return null;
+  return r.op === "gte" ? v >= r.value : v <= r.value;
+}
+export function runEngine(
+  configuration: unknown,
+  rawInput: unknown,
+): EngineResult {
+  const c = z
+    .object({ implementation: z.enum(implementations) })
+    .passthrough()
+    .parse(configuration);
+  const input = z.record(z.string(), z.unknown()).parse(rawInput);
+  if (c.implementation === "weighted-score-v1") {
+    const config = z
+      .object({
+        criteria: z
+          .array(
+            z
+              .object({
+                field: z.string(),
+                weight: finite.min(0).max(1),
+                min: finite,
+                max: finite,
+                direction: z.enum(["higher", "lower"]),
+              })
+              .strict(),
+          )
+          .min(1)
+          .max(100),
+      })
+      .parse(c);
+    if (
+      Math.abs(config.criteria.reduce((s, x) => s + x.weight, 0) - 1) > 0.000001
+    )
+      return missing("Approved weights must sum to 1");
+    const contributions = [];
+    for (const x of config.criteria) {
+      const value = input[x.field];
+      if (
+        typeof value !== "number" ||
+        !Number.isFinite(value) ||
+        x.max <= x.min
+      )
+        return missing(
+          "Missing criterion or invalid approved range: " + x.field,
+        );
+      let normalized = Math.max(
+        0,
+        Math.min(1, (value - x.min) / (x.max - x.min)),
+      );
+      if (x.direction === "lower") normalized = 1 - normalized;
+      contributions.push({
+        field: x.field,
+        value,
+        normalized,
+        weight: x.weight,
+        contribution: normalized * x.weight,
+      });
+    }
+    const score = 100 * contributions.reduce((s, x) => s + x.contribution, 0);
+    return {
+      status: "indicative",
+      score,
+      result: { score, contributions },
+      explanation:
+        "Configured weighted score using declared scenario inputs; source evidence must be verified.",
+    };
+  }
+  if (c.implementation === "hosting-check-v1") {
+    const p = z
+      .object({
+        requestedMw: finite.positive(),
+        approvedHostingMw: finite.nonnegative(),
+      })
+      .safeParse(input);
+    if (!p.success)
+      return missing(
+        "Requested MW and a versioned approved hosting value are required",
+      );
+    return {
+      status: "indicative",
+      result: {
+        requestedMw: p.data.requestedMw,
+        approvedHostingMw: p.data.approvedHostingMw,
+        withinRecordedHosting: p.data.requestedMw <= p.data.approvedHostingMw,
+      },
+      explanation:
+        "Comparison with recorded approved hosting capacity; requires a DISCOM connection study and does not grant permission.",
+    };
+  }
+  if (["model-rules-v1", "eligibility-rules-v1"].includes(c.implementation)) {
+    const config = z
+      .object({
+        options: z
+          .array(z.object({ code: z.string(), rules: z.array(rule).max(100) }))
+          .max(100),
+      })
+      .parse(c);
+    return {
+      status: "indicative",
+      result: {
+        matches: config.options.map((o) => {
+          const checks = o.rules.map((r) => ({
+            field: r.field,
+            matched: matches(r, input),
+          }));
+          return {
+            code: o.code,
+            status: checks.some((x) => x.matched === null)
+              ? "unverified"
+              : checks.every((x) => x.matched)
+                ? "potential_match"
+                : "not_matched",
+            checks,
+          };
+        }),
+      },
+      explanation:
+        "Configured rule matches are potential matches, subject to source conditions and verification.",
+    };
+  }
+  if (c.implementation === "retrofit-checks-v1") {
+    const config = z
+      .object({
+        checks: z
+          .array(
+            z.object({
+              code: z.string(),
+              rule,
+              requiresFieldVerification: z.boolean().default(false),
+            }),
+          )
+          .max(100),
+      })
+      .parse(c);
+    return {
+      status: "indicative",
+      result: {
+        checks: config.checks.map((x) => ({
+          code: x.code,
+          status: x.requiresFieldVerification
+            ? "field_verification"
+            : matches(x.rule, input) === null
+              ? "unknown"
+              : matches(x.rule, input)
+                ? "pass"
+                : "fail",
+        })),
+      },
+      explanation:
+        "Configured checks; structural, land-rights and electrical field verification remains necessary.",
+    };
+  }
+  if (c.implementation === "row-shadow-v1") {
+    const p = z
+      .object({
+        clearanceM: finite.nonnegative().max(30),
+        panelChordM: finite.positive().max(30),
+        tiltDeg: finite.min(0).max(90),
+        rowPitchM: finite.positive().max(100),
+        sunElevationDeg: finite.min(-90).max(90),
+        sunAzimuthDeg: finite.min(0).max(360),
+        rowNormalAzimuthDeg: finite.min(0).max(360),
+      })
+      .safeParse(input);
+    if (!p.success)
+      return missing("Provide array geometry, sun elevation and azimuth");
+    const v = p.data;
+    if (v.sunElevationDeg <= 0)
+      return missing(
+        "Sun is below the horizon; irradiance and shadow coverage are unavailable",
+      );
+    const rad = Math.PI / 180,
+      height = v.clearanceM + v.panelChordM * Math.sin(v.tiltDeg * rad),
+      shadowLengthM = height / Math.tan(v.sunElevationDeg * rad),
+      crossRowShadowM =
+        shadowLengthM *
+        Math.abs(Math.cos((v.sunAzimuthDeg - v.rowNormalAzimuthDeg) * rad));
+    return {
+      status: "indicative",
+      result: {
+        shadowLengthM,
+        crossRowShadowM,
+        projectedPanelWidthM: v.panelChordM * Math.cos(v.tiltDeg * rad),
+        crossRowShadowToPitchRatio: Math.min(1, crossRowShadowM / v.rowPitchM),
+        groundTemperature: null,
+      },
+      explanation:
+        "Single-instant geometric projection on flat ground from supplied sun position. No annual irradiance, diffuse light, terrain or weather-based ground-temperature model.",
+    };
+  }
+  if (c.implementation === "discounted-cashflow-v1") {
+    const p = z
+      .object({
+        capexInr: finite.positive(),
+        discountRate: finite.min(0).max(1),
+        annualNetCashflowsInr: z.array(finite).min(1).max(50),
+      })
+      .safeParse(input);
+    if (!p.success)
+      return missing("Provide CAPEX, annual net cashflows and discount rate");
+    const v = p.data,
+      npv =
+        -v.capexInr +
+        v.annualNetCashflowsInr.reduce(
+          (s, x, i) => s + x / (1 + v.discountRate) ** (i + 1),
+          0,
+        );
+    let balance = -v.capexInr,
+      paybackYears: number | null = null;
+    v.annualNetCashflowsInr.forEach((x, i) => {
+      const old = balance;
+      balance += x;
+      if (paybackYears === null && old < 0 && balance >= 0 && x > 0)
+        paybackYears = i + -old / x;
+    });
+    return {
+      status: "indicative",
+      result: {
+        npvInr: npv,
+        discountRate: v.discountRate,
+        simplePaybackYears: paybackYears,
+        undiscountedNetInr: balance,
+      },
+      explanation:
+        "Arithmetic from declared annual net cashflows, excluding any costs or taxes not included in the inputs.",
+    };
+  }
+  return missing(
+    "Market distance is calculated by the spatial data service, not user-supplied coordinates alone",
+  );
+}
