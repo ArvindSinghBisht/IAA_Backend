@@ -1,3 +1,16 @@
-import{test}from'node:test';import assert from'node:assert/strict';import{pgConfig}from'../src/lib/pg-config';
-test('Neon enforces explicit TLS hostname verification and enables channel binding',()=>{const c=pgConfig('postgresql://test:example@ep-test-pooler.us-east-2.aws.neon.tech/db?sslmode=require&channel_binding=require');const u=new URL(c.connectionString!);assert.equal(u.searchParams.get('sslmode'),'verify-full');assert.equal(u.hostname,'ep-test-pooler.us-east-2.aws.neon.tech');assert.equal(c.enableChannelBinding,true)});
-test('Local development keeps its connection parameters',()=>{const c=pgConfig('postgresql://localhost/iaa');assert.equal(new URL(c.connectionString!).searchParams.has('sslmode'),false)});
+import { test } from "node:test";
+import assert from "node:assert/strict";
+import { pgConfig } from "../src/lib/pg-config";
+test("Neon enforces explicit TLS hostname verification and enables channel binding", () => {
+  const c = pgConfig(
+    "postgresql://test:example@ep-test-pooler.us-east-2.aws.neon.tech/db?sslmode=require&channel_binding=require",
+  );
+  const u = new URL(c.connectionString!);
+  assert.equal(u.searchParams.get("sslmode"), "verify-full");
+  assert.equal(u.hostname, "ep-test-pooler.us-east-2.aws.neon.tech");
+  assert.equal(c.enableChannelBinding, true);
+});
+test("Local development keeps its connection parameters", () => {
+  const c = pgConfig("postgresql://localhost/iaa");
+  assert.equal(new URL(c.connectionString!).searchParams.has("sslmode"), false);
+});

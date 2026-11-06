@@ -1,18 +1,174 @@
-import {z} from 'zod';
-import {query,transaction} from '@/lib/db';
-import {projectAccess,type Actor} from '@/lib/auth';
-import {ApiError,uuid} from '@/lib/http';
-const text=z.string().trim().min(1).max(2000),number=z.number().finite().nonnegative();
-export const factSchemas={
- energy:z.object({segment_code:text,start_at:z.iso.datetime({offset:true}),end_at:z.iso.datetime({offset:true}),generation_mwh:number,export_mwh:number.optional(),onsite_mwh:number.optional(),capacity_dc_mwp:z.number().positive(),capacity_ac_mw:z.number().positive().optional(),operational_hours:number.optional(),reference_hours:z.number().positive(),meter_reference:text}).strict().refine(x=>Date.parse(x.end_at)>Date.parse(x.start_at),'End must follow start').refine(x=>x.operational_hours===undefined||x.operational_hours<=x.reference_hours,'Operational hours exceed reference hours').refine(x=>(x.export_mwh??0)+(x.onsite_mwh??0)<=x.generation_mwh,'Export and onsite consumption exceed generation'),
- land:z.object({plot_code:text,site_area_ha:z.number().positive(),solar_area_ha:number.optional(),cultivated_area_ha:number.optional(),water_used_m3:number.optional(),notes:text.optional()}).strict().refine(x=>(x.solar_area_ha??0)<=x.site_area_ha&&(x.cultivated_area_ha??0)<=x.site_area_ha,'Areas exceed site area'),
- income:z.object({scope_kind:z.enum(['project','fpo','household']),scope_key:text,component:text,amount_inr:z.number().finite(),accounting_basis:z.enum(['gross_receipt','expense','net_income','transfer']),source_reference:text}).strict(),
- inclusion:z.object({population_code:text,women:number.int(),men:number.int(),other_gender:number.int(),gender_unknown:number.int(),youth:number.int().optional(),households:number.int().optional(),count_basis:text}).strict().refine(x=>x.youth===undefined||x.youth<=x.women+x.men+x.other_gender+x.gender_unknown,'Youth exceed population')
+import * as repository from "@/repositories/monitoring-records.repository";
+import { z } from "zod";
+import { unitOfWork as transaction } from "@/infrastructure/database/unit-of-work";
+import { projectAccess, type Actor } from "@/lib/auth";
+import { ApiError, uuid } from "@/lib/http";
+const text = z.string().trim().min(1).max(2000),
+  number = z.number().finite().nonnegative();
+export const factSchemas = {
+  energy: z
+    .object({
+      segment_code: text,
+      start_at: z.iso.datetime({ offset: true }),
+      end_at: z.iso.datetime({ offset: true }),
+      generation_mwh: number,
+      export_mwh: number.optional(),
+      onsite_mwh: number.optional(),
+      capacity_dc_mwp: z.number().positive(),
+      capacity_ac_mw: z.number().positive().optional(),
+      operational_hours: number.optional(),
+      reference_hours: z.number().positive(),
+      meter_reference: text,
+    })
+    .strict()
+    .refine(
+      (x) => Date.parse(x.end_at) > Date.parse(x.start_at),
+      "End must follow start",
+    )
+    .refine(
+      (x) =>
+        x.operational_hours === undefined ||
+        x.operational_hours <= x.reference_hours,
+      "Operational hours exceed reference hours",
+    )
+    .refine(
+      (x) => (x.export_mwh ?? 0) + (x.onsite_mwh ?? 0) <= x.generation_mwh,
+      "Export and onsite consumption exceed generation",
+    ),
+  land: z
+    .object({
+      plot_code: text,
+      site_area_ha: z.number().positive(),
+      solar_area_ha: number.optional(),
+      cultivated_area_ha: number.optional(),
+      water_used_m3: number.optional(),
+      notes: text.optional(),
+    })
+    .strict()
+    .refine(
+      (x) =>
+        (x.solar_area_ha ?? 0) <= x.site_area_ha &&
+        (x.cultivated_area_ha ?? 0) <= x.site_area_ha,
+      "Areas exceed site area",
+    ),
+  income: z
+    .object({
+      scope_kind: z.enum(["project", "fpo", "household"]),
+      scope_key: text,
+      component: text,
+      amount_inr: z.number().finite(),
+      accounting_basis: z.enum([
+        "gross_receipt",
+        "expense",
+        "net_income",
+        "transfer",
+      ]),
+      source_reference: text,
+    })
+    .strict(),
+  inclusion: z
+    .object({
+      population_code: text,
+      women: number.int(),
+      men: number.int(),
+      other_gender: number.int(),
+      gender_unknown: number.int(),
+      youth: number.int().optional(),
+      households: number.int().optional(),
+      count_basis: text,
+    })
+    .strict()
+    .refine(
+      (x) =>
+        x.youth === undefined ||
+        x.youth <= x.women + x.men + x.other_gender + x.gender_unknown,
+      "Youth exceed population",
+    ),
 };
-const tables={energy:'mon.energy_records',land:'mon.land_records',income:'mon.income_records',inclusion:'mon.inclusion_totals'};
-function config(kind:string){if(!Object.hasOwn(tables,kind))throw new ApiError(404,'NOT_FOUND','Unknown monitoring record type');return {table:tables[kind as keyof typeof tables],schema:factSchemas[kind as keyof typeof factSchemas]};}
-export async function records(a:Actor,id:string,kind:string){uuid.parse(id);const {table}=config(kind);const v=(await query('SELECT project_id FROM mon.submission_versions WHERE id=$1',[id])).rows[0];if(!v)throw new ApiError(404,'NOT_FOUND','Revision not found');await projectAccess(a,v.project_id,'read');return (await query(`SELECT * FROM ${table} WHERE submission_version_id=$1 ORDER BY id LIMIT 1000`,[id])).rows;}
-export async function addRecord(a:Actor,id:string,kind:string,input:unknown){uuid.parse(id);const {table,schema}=config(kind),p=schema.parse(input);return transaction(async c=>{const v=(await c.query('SELECT project_id,status FROM mon.submission_versions WHERE id=$1 FOR UPDATE',[id])).rows[0];if(!v)throw new ApiError(404,'NOT_FOUND','Revision not found');await projectAccess(a,v.project_id,'edit',c);if(v.status!=='draft')throw new ApiError(409,'IMMUTABLE','Only drafts are editable');const columns=Object.keys(p),values=Object.values(p);const result=(await c.query(`INSERT INTO ${table}(submission_version_id,${columns.join(',')}) VALUES($1,${columns.map((_,i)=>'$'+(i+2)).join(',')}) RETURNING id`,[id,...values])).rows[0];await c.query("UPDATE mon.submission_versions SET validation_status='pending',payload_hash=NULL WHERE id=$1",[id]);await c.query("INSERT INTO ops.audit_events(actor_id,action,target_table,target_id,request_id,redacted_change) VALUES($1,'record_added',$2,$3,gen_random_uuid()::text,'{}')",[a.id,table,result.id]);return result;});}
-export async function obligations(a:Actor,id:string){uuid.parse(id);await projectAccess(a,id,'read');return (await query('SELECT o.*,p.code AS period_code,p.start_date,p.end_date FROM mon.obligations o JOIN mon.periods p ON p.id=o.period_id WHERE o.project_id=$1 ORDER BY o.due_at',[id])).rows;}
-export async function form(a:Actor,id:string){uuid.parse(id);const o=(await query('SELECT project_id,form_version_id FROM mon.obligations WHERE id=$1',[id])).rows[0];if(!o)throw new ApiError(404,'NOT_FOUND','Obligation not found');await projectAccess(a,o.project_id,'read');return (await query('SELECT f.*,v.value_type,v.validation,v.unit_id,i.code AS indicator_code,i.name AS indicator_name FROM mon.form_fields f JOIN mon.indicator_versions v ON v.id=f.indicator_version_id JOIN mon.indicators i ON i.id=v.indicator_id WHERE f.form_version_id=$1 ORDER BY f.sort_order,f.id',[o.form_version_id])).rows;}
-export async function deleteRecord(a:Actor,id:string,kind:string,recordId:string){uuid.parse(id);uuid.parse(recordId);const {table}=config(kind);return transaction(async c=>{const v=(await c.query('SELECT project_id,status FROM mon.submission_versions WHERE id=$1 FOR UPDATE',[id])).rows[0];if(!v)throw new ApiError(404,'NOT_FOUND','Revision not found');await projectAccess(a,v.project_id,'edit',c);if(v.status!=='draft')throw new ApiError(409,'IMMUTABLE','Only draft records can be deleted');const r=await c.query(`DELETE FROM ${table} WHERE id=$1 AND submission_version_id=$2 RETURNING id`,[recordId,id]);if(!r.rowCount)throw new ApiError(404,'NOT_FOUND','Record not found');await c.query("UPDATE mon.submission_versions SET validation_status='pending',payload_hash=NULL WHERE id=$1",[id]);await c.query("INSERT INTO ops.audit_events(actor_id,action,target_table,target_id,request_id,redacted_change) VALUES($1,'draft_record_deleted',$2,$3,gen_random_uuid()::text,'{}')",[a.id,table,recordId]);return {id:recordId,deleted:true};});}
+const tables = {
+  energy: "mon.energy_records",
+  land: "mon.land_records",
+  income: "mon.income_records",
+  inclusion: "mon.inclusion_totals",
+};
+function config(kind: string) {
+  if (!Object.hasOwn(tables, kind))
+    throw new ApiError(404, "NOT_FOUND", "Unknown monitoring record type");
+  return {
+    table: tables[kind as keyof typeof tables],
+    schema: factSchemas[kind as keyof typeof factSchemas],
+  };
+}
+export async function records(a: Actor, id: string, kind: string) {
+  uuid.parse(id);
+  const { table } = config(kind);
+  const v = (await repository.selectMonSubmissionVersions([id], undefined))
+    .rows[0];
+  if (!v) throw new ApiError(404, "NOT_FOUND", "Revision not found");
+  await projectAccess(a, v.project_id, "read");
+  return (await repository.selectSession([id], undefined, [table])).rows;
+}
+export async function addRecord(
+  a: Actor,
+  id: string,
+  kind: string,
+  input: unknown,
+) {
+  uuid.parse(id);
+  const { table, schema } = config(kind),
+    p = schema.parse(input);
+  return transaction(async (c) => {
+    const v = (await repository.selectMonSubmissionVersions2([id], c)).rows[0];
+    if (!v) throw new ApiError(404, "NOT_FOUND", "Revision not found");
+    await projectAccess(a, v.project_id, "edit", c);
+    if (v.status !== "draft")
+      throw new ApiError(409, "IMMUTABLE", "Only drafts are editable");
+    const columns = Object.keys(p),
+      values = Object.values(p);
+    const result = (
+      await repository.insertSession([id, ...values], c, [
+        table,
+        columns.join(","),
+        columns.map((_, i) => "$" + (i + 2)).join(","),
+      ])
+    ).rows[0];
+    await repository.updateMonSubmissionVersions([id], c);
+    await repository.insertOpsAuditEvents([a.id, table, result.id], c);
+    return result;
+  });
+}
+export async function obligations(a: Actor, id: string) {
+  uuid.parse(id);
+  await projectAccess(a, id, "read");
+  return (await repository.selectMonObligations([id], undefined)).rows;
+}
+export async function form(a: Actor, id: string) {
+  uuid.parse(id);
+  const o = (await repository.selectMonObligations2([id], undefined)).rows[0];
+  if (!o) throw new ApiError(404, "NOT_FOUND", "Obligation not found");
+  await projectAccess(a, o.project_id, "read");
+  return (await repository.selectMonFormFields([o.form_version_id], undefined))
+    .rows;
+}
+export async function deleteRecord(
+  a: Actor,
+  id: string,
+  kind: string,
+  recordId: string,
+) {
+  uuid.parse(id);
+  uuid.parse(recordId);
+  const { table } = config(kind);
+  return transaction(async (c) => {
+    const v = (await repository.selectMonSubmissionVersions3([id], c)).rows[0];
+    if (!v) throw new ApiError(404, "NOT_FOUND", "Revision not found");
+    await projectAccess(a, v.project_id, "edit", c);
+    if (v.status !== "draft")
+      throw new ApiError(409, "IMMUTABLE", "Only draft records can be deleted");
+    const r = await repository.deleteSession([recordId, id], c, [table]);
+    if (!r.rowCount) throw new ApiError(404, "NOT_FOUND", "Record not found");
+    await repository.updateMonSubmissionVersions2([id], c);
+    await repository.insertOpsAuditEvents2([a.id, table, recordId], c);
+    return { id: recordId, deleted: true };
+  });
+}

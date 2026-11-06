@@ -1,3 +1,7 @@
+# Version 0.3 deployment update
+
+The current build prepares standalone assets automatically. `npm run build` now runs `next build` followed by scripts/prepare-standalone.mjs. Use `npm run test:production` to start a temporary standalone server and test real HTTP requests with intentionally empty database/OIDC configuration. The self-contained default `npm test` also runs actual embedded PostGIS lifecycle tests, without Docker/Neon. Native PostGIS staging tests remain available separately. Explicit cross-origin browser access is supported via CORS_ALLOWED_ORIGINS. See PROFESSIONAL_BACKEND.md and START_HERE.md first.
+
 # Operations, deployment and verification
 
 ## Render

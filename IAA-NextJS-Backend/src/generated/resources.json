@@ -588,13 +588,7 @@
         "required": false,
         "nullable": false,
         "default": true,
-        "enum": [
-          "draft",
-          "review",
-          "approved",
-          "rejected",
-          "retired"
-        ]
+        "enum": ["draft", "review", "approved", "rejected", "retired"]
       },
       "is_demo": {
         "type": "boolean",
@@ -689,13 +683,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "missing",
-          "partial",
-          "available",
-          "stale",
-          "blocked"
-        ]
+        "enum": ["missing", "partial", "available", "stale", "blocked"]
       },
       "required_resolution": {
         "type": "text",
@@ -883,11 +871,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "vector",
-          "raster",
-          "table"
-        ]
+        "enum": ["vector", "raster", "table"]
       },
       "geometry_type": {
         "type": "text",
@@ -1030,10 +1014,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "district",
-          "state_total"
-        ]
+        "enum": ["district", "state_total"]
       },
       "reporting_area": {
         "type": "numeric",
@@ -2489,10 +2470,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "policy",
-          "scheme"
-        ]
+        "enum": ["policy", "scheme"]
       },
       "issuer_id": {
         "type": "uuid",
@@ -3081,10 +3059,7 @@
         "required": false,
         "nullable": false,
         "default": true,
-        "enum": [
-          "public",
-          "restricted"
-        ]
+        "enum": ["public", "restricted"]
       },
       "created_at": {
         "type": "timestamptz",
@@ -3228,11 +3203,7 @@
         "required": false,
         "nullable": false,
         "default": true,
-        "enum": [
-          "draft",
-          "approved",
-          "retired"
-        ]
+        "enum": ["draft", "approved", "retired"]
       },
       "approved_by": {
         "type": "uuid",
@@ -3313,11 +3284,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "withhold",
-          "flag",
-          "approved_renormalisation"
-        ]
+        "enum": ["withhold", "flag", "approved_renormalisation"]
       },
       "created_at": {
         "type": "timestamptz",
@@ -3354,12 +3321,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "quarterly",
-          "seasonal",
-          "annual",
-          "monthly"
-        ]
+        "enum": ["quarterly", "seasonal", "annual", "monthly"]
       },
       "start_date": {
         "type": "date",
@@ -3485,14 +3447,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "number",
-          "text",
-          "boolean",
-          "date",
-          "choice",
-          "json"
-        ]
+        "enum": ["number", "text", "boolean", "date", "choice", "json"]
       },
       "validation": {
         "type": "jsonb",
@@ -3565,11 +3520,7 @@
         "required": false,
         "nullable": false,
         "default": true,
-        "enum": [
-          "draft",
-          "approved",
-          "retired"
-        ]
+        "enum": ["draft", "approved", "retired"]
       },
       "approved_by": {
         "type": "uuid",
@@ -3886,11 +3837,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "control_plot",
-          "regional",
-          "historical"
-        ]
+        "enum": ["control_plot", "regional", "historical"]
       },
       "yield_t_ha": {
         "type": "numeric",
@@ -4178,12 +4125,7 @@
         "required": false,
         "nullable": true,
         "default": false,
-        "enum": [
-          "construction",
-          "operation",
-          "agriculture",
-          "other"
-        ]
+        "enum": ["construction", "operation", "agriculture", "other"]
       },
       "created_at": {
         "type": "timestamptz",
@@ -4286,11 +4228,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "project",
-          "fpo",
-          "household"
-        ]
+        "enum": ["project", "fpo", "household"]
       },
       "scope_key": {
         "type": "text",
@@ -4315,12 +4253,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "gross_receipt",
-          "expense",
-          "net_income",
-          "transfer"
-        ]
+        "enum": ["gross_receipt", "expense", "net_income", "transfer"]
       },
       "source_reference": {
         "type": "text",
@@ -4424,12 +4357,7 @@
         "required": true,
         "nullable": false,
         "default": false,
-        "enum": [
-          "adopted",
-          "not_adopted",
-          "unknown",
-          "not_applicable"
-        ]
+        "enum": ["adopted", "not_adopted", "unknown", "not_applicable"]
       },
       "measured_value": {
         "type": "numeric",

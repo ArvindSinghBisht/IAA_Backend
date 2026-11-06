@@ -1,12 +1,104 @@
-import {z} from 'zod';
-import {query,transaction} from '@/lib/db';
-import type {Actor} from '@/lib/auth';
-import {admin,audit} from '@/lib/governance';
-import {uuid,ApiError} from '@/lib/http';
-export async function users(a:Actor){admin(a);return {data:(await query('SELECT id,email,display_name,organisation_id,is_active FROM iaa_auth.users ORDER BY display_name,id LIMIT 200')).rows};}
-export async function provision(a:Actor,input:unknown){admin(a);const p=z.object({subject:z.string().min(1).max(500),email:z.email(),name:z.string().min(1).max(200),organisationId:uuid.optional(),role:z.enum(['system_admin','reviewer','data_steward','project_user','management'])}).strict().parse(input);if(p.role!=='system_admin'&&!p.organisationId)throw new ApiError(400,'ORGANISATION_REQUIRED','Organisation is required');return transaction(async c=>{const u=(await c.query('INSERT INTO iaa_auth.users(identity_subject,email,display_name,organisation_id) VALUES($1,$2,$3,$4) ON CONFLICT(identity_subject) DO UPDATE SET email=excluded.email,display_name=excluded.display_name RETURNING id',[p.subject,p.email,p.name,p.organisationId??null])).rows[0];await c.query('INSERT INTO iaa_auth.user_roles(user_id,role_id,organisation_id) SELECT $1,id,$2 FROM iaa_auth.roles WHERE code=$3 ON CONFLICT DO NOTHING',[u.id,p.role==='system_admin'?null:p.organisationId,p.role]);await audit(c,a,'iaa_auth.users',u.id,'user_provisioned',{role:p.role});return u;});}
-export async function deactivate(a:Actor,id:string){admin(a);uuid.parse(id);if(id===a.id)throw new ApiError(409,'SELF_DISABLE','Cannot disable your own account');return transaction(async c=>{const r=(await c.query('UPDATE iaa_auth.users SET is_active=false WHERE id=$1 RETURNING id',[id])).rows[0];if(!r)throw new ApiError(404,'NOT_FOUND','User not found');await audit(c,a,'iaa_auth.users',id,'user_disabled');return r;});}
-export async function notifications(a:Actor){return {data:(await query("SELECT id,template_code,payload,scheduled_at,status FROM ops.notifications WHERE recipient_id=$1 AND channel='in_app' AND scheduled_at<=now() ORDER BY scheduled_at DESC LIMIT 100",[a.id])).rows};}
-export async function acknowledge(a:Actor,id:string){uuid.parse(id);const r=(await query("UPDATE ops.notifications SET status='read' WHERE id=$1 AND recipient_id=$2 AND channel='in_app' RETURNING id",[id,a.id])).rows[0];if(!r)throw new ApiError(404,'NOT_FOUND','Notification not found');return r;}
-export async function reminders(a:Actor){admin(a);return transaction(async c=>{const r=await c.query(`INSERT INTO ops.notifications(recipient_id,obligation_id,channel,template_code,payload,scheduled_at,dedupe_key) SELECT o.assigned_to,o.id,'in_app','return_due',jsonb_build_object('obligationId',o.id,'dueAt',o.due_at),now(),'due:'||o.id::text||':'||current_date::text FROM mon.obligations o WHERE o.assigned_to IS NOT NULL AND o.waived_at IS NULL AND o.due_at<=now()+interval '7 days' AND NOT EXISTS(SELECT 1 FROM mon.submissions s JOIN mon.submission_versions v ON v.submission_id=s.id WHERE s.obligation_id=o.id AND v.status='approved') ON CONFLICT(dedupe_key) DO NOTHING RETURNING id`);return {created:r.rowCount};});}
-export async function membership(a:Actor,id:string,input:unknown){admin(a);uuid.parse(id);const p=z.object({userId:uuid,role:z.enum(['project_user','data_steward','management']),validUntil:z.iso.datetime({offset:true}).optional()}).strict().parse(input);return transaction(async c=>{const m=(await c.query('INSERT INTO project.memberships(project_id,user_id,role_id,valid_until) SELECT $1,$2,id,$4 FROM iaa_auth.roles WHERE code=$3 ON CONFLICT(project_id,user_id,role_id) DO UPDATE SET valid_until=excluded.valid_until RETURNING id',[id,p.userId,p.role,p.validUntil??null])).rows[0];await audit(c,a,'project.memberships',m.id,'membership_granted');return m;});}
+import * as repository from "@/repositories/administration.repository";
+import { z } from "zod";
+import { unitOfWork as transaction } from "@/infrastructure/database/unit-of-work";
+import type { Actor } from "@/lib/auth";
+import { admin, audit } from "@/lib/governance";
+import { uuid, ApiError } from "@/lib/http";
+export async function users(a: Actor) {
+  admin(a);
+  return { data: (await repository.selectIaaAuthUsers([], undefined)).rows };
+}
+export async function provision(a: Actor, input: unknown) {
+  admin(a);
+  const p = z
+    .object({
+      subject: z.string().min(1).max(500),
+      email: z.email(),
+      name: z.string().min(1).max(200),
+      organisationId: uuid.optional(),
+      role: z.enum([
+        "system_admin",
+        "reviewer",
+        "data_steward",
+        "project_user",
+        "management",
+      ]),
+    })
+    .strict()
+    .parse(input);
+  if (p.role !== "system_admin" && !p.organisationId)
+    throw new ApiError(
+      400,
+      "ORGANISATION_REQUIRED",
+      "Organisation is required",
+    );
+  return transaction(async (c) => {
+    const u = (
+      await repository.insertIaaAuthUsers(
+        [p.subject, p.email, p.name, p.organisationId ?? null],
+        c,
+      )
+    ).rows[0];
+    await repository.insertIaaAuthUserRoles(
+      [u.id, p.role === "system_admin" ? null : p.organisationId, p.role],
+      c,
+    );
+    await audit(c, a, "iaa_auth.users", u.id, "user_provisioned", {
+      role: p.role,
+    });
+    return u;
+  });
+}
+export async function deactivate(a: Actor, id: string) {
+  admin(a);
+  uuid.parse(id);
+  if (id === a.id)
+    throw new ApiError(409, "SELF_DISABLE", "Cannot disable your own account");
+  return transaction(async (c) => {
+    const r = (await repository.updateIaaAuthUsers([id], c)).rows[0];
+    if (!r) throw new ApiError(404, "NOT_FOUND", "User not found");
+    await audit(c, a, "iaa_auth.users", id, "user_disabled");
+    return r;
+  });
+}
+export async function notifications(a: Actor) {
+  return {
+    data: (await repository.selectOpsNotifications([a.id], undefined)).rows,
+  };
+}
+export async function acknowledge(a: Actor, id: string) {
+  uuid.parse(id);
+  const r = (await repository.updateOpsNotifications([id, a.id], undefined))
+    .rows[0];
+  if (!r) throw new ApiError(404, "NOT_FOUND", "Notification not found");
+  return r;
+}
+export async function reminders(a: Actor) {
+  admin(a);
+  return transaction(async (c) => {
+    const r = await repository.insertOpsNotifications([], c);
+    return { created: r.rowCount };
+  });
+}
+export async function membership(a: Actor, id: string, input: unknown) {
+  admin(a);
+  uuid.parse(id);
+  const p = z
+    .object({
+      userId: uuid,
+      role: z.enum(["project_user", "data_steward", "management"]),
+      validUntil: z.iso.datetime({ offset: true }).optional(),
+    })
+    .strict()
+    .parse(input);
+  return transaction(async (c) => {
+    const m = (
+      await repository.insertProjectMemberships(
+        [id, p.userId, p.role, p.validUntil ?? null],
+        c,
+      )
+    ).rows[0];
+    await audit(c, a, "project.memberships", m.id, "membership_granted");
+    return m;
+  });
+}

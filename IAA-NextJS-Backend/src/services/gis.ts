@@ -1,16 +1,276 @@
-import {z} from 'zod';
-import {query} from '@/lib/db';
-import {ApiError,pageQuery,uuid} from '@/lib/http';
-import {selectColumns,definition} from './resources';
-const publicVersion=`v.status='approved' AND v.is_current AND v.public_allowed AND NOT v.is_demo AND d.is_active`;
-export async function search(params:Record<string,string>){const p=pageQuery.parse(params);const r=await query(`SELECT 'area' AS kind,id,name,level AS subtype,NULL::jsonb AS geometry FROM geo.areas WHERE (valid_to IS NULL OR valid_to>=current_date) AND name ILIKE '%'||$1||'%' UNION ALL SELECT kind,id,name,subtype,ST_AsGeoJSON(point)::jsonb FROM wp1.api_features WHERE name ILIKE '%'||$1||'%' UNION ALL SELECT 'project',r.project_id,r.name,r.status,ST_AsGeoJSON(r.point)::jsonb FROM project.public_registry r JOIN project.projects p ON p.id=r.project_id WHERE p.archived_at IS NULL AND r.name ILIKE '%'||$1||'%' ORDER BY name,id LIMIT $2 OFFSET $3`,[p.q,p.limit,p.offset]);return {data:r.rows,meta:p};}
-export async function districtDomain(id:string,domain:string,params:Record<string,string>){uuid.parse(id);const p=pageQuery.parse(params);const tables={crops:'wp1.crop_production',land:'wp1.land_statistics',irrigation:'wp1.irrigation_statistics',environment:'wp1.environment_observations'};const table=Object.hasOwn(tables,domain)?tables[domain as keyof typeof tables]:undefined;if(!table)throw new ApiError(404,'DOMAIN_NOT_FOUND','Use crops, land, irrigation or environment');return {data:(await query(`SELECT ${selectColumns(table)},s.name AS source,v.version_label,v.reference_start,v.reference_end FROM ${table} t JOIN data.dataset_versions v ON v.id=t.dataset_version_id JOIN data.datasets d ON d.id=v.dataset_id JOIN data.sources s ON s.id=d.source_id WHERE t.area_id=$1 AND ${publicVersion} ORDER BY t.id LIMIT $2 OFFSET $3`,[id,p.limit,p.offset])).rows,meta:{...p,coverage:'Exact-area records. Missing observations are not zero; compare matching units, categories and periods.'}};}
-export async function layers(){return {data:(await query(`SELECT l.id,l.code,l.name,l.layer_type,l.geometry_type,l.style,l.legend,l.tile_service_reference,l.dataset_version_id,v.reference_start,v.reference_end,s.name AS source FROM geo.layers l JOIN data.dataset_versions v ON v.id=l.dataset_version_id JOIN data.datasets d ON d.id=v.dataset_id JOIN data.sources s ON s.id=d.source_id WHERE ${publicVersion} ORDER BY l.name,l.id`)).rows};}
-export async function layerFeatures(id:string,params:Record<string,string>){uuid.parse(id);const p=pageQuery.extend({west:z.coerce.number().min(-180).max(180).optional(),south:z.coerce.number().min(-90).max(90).optional(),east:z.coerce.number().min(-180).max(180).optional(),north:z.coerce.number().min(-90).max(90).optional()}).parse(params);const bbox=[p.west,p.south,p.east,p.north];if(bbox.some(x=>x!==undefined)&&(bbox.some(x=>x===undefined)||p.west!>=p.east!||p.south!>=p.north!))throw new ApiError(400,'BBOX','Provide ordered west,south,east,north');const r=await query(`SELECT f.id,f.attributes,ST_AsGeoJSON(f.geom)::jsonb AS geometry FROM geo.features f JOIN geo.layers l ON l.id=f.layer_id JOIN data.dataset_versions v ON v.id=l.dataset_version_id JOIN data.datasets d ON d.id=v.dataset_id WHERE l.id=$1 AND ${publicVersion} AND ($4::numeric IS NULL OR ST_Intersects(f.geom,ST_MakeEnvelope($4,$5,$6,$7,4326))) ORDER BY f.id LIMIT $2 OFFSET $3`,[id,p.limit,p.offset,...bbox.map(x=>x??null)]);return {type:'FeatureCollection',features:r.rows.map(({geometry,...properties})=>({type:'Feature',geometry,properties})),meta:p};}
-export async function boundary(id:string){uuid.parse(id);return {data:(await query(`SELECT b.id,b.area_id,b.dataset_version_id,ST_AsGeoJSON(b.geom)::jsonb AS geometry FROM geo.boundaries b JOIN data.dataset_versions v ON v.id=b.dataset_version_id JOIN data.datasets d ON d.id=v.dataset_id WHERE b.area_id=$1 AND ${publicVersion} ORDER BY b.valid_from DESC NULLS LAST,b.id LIMIT 10`,[id])).rows};}
-export async function compare(input:unknown){const p=z.object({areaIds:z.array(uuid).min(2).max(4),metricCode:z.string().min(1).max(100),categoryCode:z.string().max(100).default(''),periodStart:z.iso.date(),periodEnd:z.iso.date(),unitId:uuid}).strict().parse(input);const r=await query(`SELECT t.area_id,t.value,t.value_status,t.dataset_version_id,s.name AS source FROM wp1.environment_observations t JOIN data.dataset_versions v ON v.id=t.dataset_version_id JOIN data.datasets d ON d.id=v.dataset_id JOIN data.sources s ON s.id=d.source_id WHERE t.area_id=ANY($1::uuid[]) AND t.metric_code=$2 AND t.category_code=$3 AND t.period_start=$4 AND t.period_end=$5 AND t.unit_id=$6 AND ${publicVersion} ORDER BY t.area_id,t.id`,[p.areaIds,p.metricCode,p.categoryCode,p.periodStart,p.periodEnd,p.unitId]);return {data:p.areaIds.map(areaId=>({areaId,status:r.rows.some(x=>x.area_id===areaId)?'available':'unavailable',observations:r.rows.filter(x=>x.area_id===areaId)})),meta:p};}
-export function csvCell(value:unknown){const s=value==null?'':typeof value==='object'?JSON.stringify(value):String(value);return '"'+(/^[=+\-@\t\r]/.test(s)?"'"+s:s).replace(/"/g,'""')+'"';}
-export async function exportDataset(id:string,resource:string,params:Record<string,string>){uuid.parse(id);const d=definition(resource);if(d.scope!=='admin'||!d.columns.dataset_version_id)throw new ApiError(400,'EXPORT_RESOURCE','Choose a version-bound GIS or content resource');const p=pageQuery.parse(params);const v=(await query(`SELECT v.id FROM data.dataset_versions v JOIN data.datasets d ON d.id=v.dataset_id WHERE v.id=$1 AND ${publicVersion} AND v.export_allowed`,[id])).rows[0];if(!v)throw new ApiError(403,'EXPORT_NOT_PERMITTED','This version does not permit public export');const rows=(await query(`SELECT ${selectColumns(resource)} FROM ${resource} t WHERE dataset_version_id=$1 ORDER BY id LIMIT $2 OFFSET $3`,[id,p.limit,p.offset])).rows;const columns=Object.keys(d.columns).filter(x=>x!=='source_record_id');const text=[columns.map(csvCell).join(','),...rows.map(row=>columns.map(k=>csvCell(row[k])).join(','))].join('\r\n');return new Response(text,{headers:{'Content-Type':'text/csv; charset=utf-8','Content-Disposition':'attachment; filename="iaa-export.csv"','X-Content-Type-Options':'nosniff','Cache-Control':'no-store','X-Page-Limit':String(p.limit),'X-Page-Offset':String(p.offset)}});}
-export async function publicProfile(id:string){uuid.parse(id);const r=(await query(`SELECT v.*,p.code,pub.public_fields FROM project.versions v JOIN project.projects p ON p.id=v.project_id JOIN project.publications pub ON pub.project_version_id=v.id WHERE p.id=$1 AND p.archived_at IS NULL AND NOT p.is_demo AND v.review_status='approved' AND pub.revoked_at IS NULL ORDER BY pub.released_at DESC LIMIT 1`,[id])).rows[0];if(!r)throw new ApiError(404,'NOT_FOUND','No released profile');const out:Record<string,unknown>={project_id:id,version_id:r.id};for(const f of r.public_fields)if(['name','code','area_id','model_id','typology_id','status','capacity_dc_mwp','summary','objective','capacity_ac_mw','site_area_ha','cultivated_area_ha','commissioned_on','ownership_model_id','land_ownership_model_id'].includes(f))out[f]=r[f];if(r.public_fields.includes('point'))out.geometry=(await query('SELECT ST_AsGeoJSON(point)::jsonb AS geometry FROM project.versions WHERE id=$1',[r.id])).rows[0].geometry;
- for(const child of ['notes','designs','crop_plans','grid_connections','land_uses','partners'])if(r.public_fields.includes(child)){const table=child==='notes'?'project.profile_notes':'project.'+child;let cols=Object.keys(definition(table).columns).filter(c=>!['id','created_at','project_version_id','approval_file_id'].includes(c));if(child==='grid_connections')cols=cols.filter(c=>!['connection_code','tariff_inr_kwh','tariff_category'].includes(c));out[child]=(await query(`SELECT ${cols} FROM ${table} WHERE project_version_id=$1 ${child==='notes'?"AND visibility='public'":''} ORDER BY id`,[r.id])).rows;}if(r.public_fields.includes('documents'))out.documents=(await query("SELECT d.file_id,d.category,d.caption FROM project.documents d JOIN data.files f ON f.id=d.file_id WHERE d.project_version_id=$1 AND d.public_allowed AND f.scan_status='clean' ORDER BY d.id",[r.id])).rows;return {data:out};}
-export async function home(){const coverage=(await query(`SELECT kind,count(*)::int AS records,count(point)::int AS mapped FROM wp1.api_map_features GROUP BY kind ORDER BY kind`)).rows;const updates=(await query(`SELECT d.code,d.title,d.domain_no,v.id AS version_id,v.version_label,v.approved_at FROM data.datasets d JOIN data.dataset_versions v ON v.dataset_id=d.id WHERE ${publicVersion} ORDER BY v.approved_at DESC LIMIT 10`)).rows;return {data:{coverage,updates},meta:{coverage:'Counts describe published records only, not total national infrastructure. Livestock facilities require actual source records with that facility type.'}};}
+import * as repository from "@/repositories/gis.repository";
+import { z } from "zod";
+
+import { ApiError, pageQuery, uuid } from "@/lib/http";
+import { selectColumns, definition } from "./resources";
+const publicVersion = `v.status='approved' AND v.is_current AND v.public_allowed AND NOT v.is_demo AND d.is_active`;
+export async function search(params: Record<string, string>) {
+  const p = pageQuery.parse(params);
+  const r = await repository.selectGeoAreas(
+    [p.q, p.limit, p.offset],
+    undefined,
+  );
+  return { data: r.rows, meta: p };
+}
+export async function districtDomain(
+  id: string,
+  domain: string,
+  params: Record<string, string>,
+) {
+  uuid.parse(id);
+  const p = pageQuery.parse(params);
+  const tables = {
+    crops: "wp1.crop_production",
+    land: "wp1.land_statistics",
+    irrigation: "wp1.irrigation_statistics",
+    environment: "wp1.environment_observations",
+  };
+  const table = Object.hasOwn(tables, domain)
+    ? tables[domain as keyof typeof tables]
+    : undefined;
+  if (!table)
+    throw new ApiError(
+      404,
+      "DOMAIN_NOT_FOUND",
+      "Use crops, land, irrigation or environment",
+    );
+  return {
+    data: (
+      await repository.selectVId([id, p.limit, p.offset], undefined, [
+        selectColumns(table),
+        table,
+        publicVersion,
+      ])
+    ).rows,
+    meta: {
+      ...p,
+      coverage:
+        "Exact-area records. Missing observations are not zero; compare matching units, categories and periods.",
+    },
+  };
+}
+export async function layers() {
+  return {
+    data: (await repository.selectGeoLayers([], undefined, [publicVersion]))
+      .rows,
+  };
+}
+export async function layerFeatures(
+  id: string,
+  params: Record<string, string>,
+) {
+  uuid.parse(id);
+  const p = pageQuery
+    .extend({
+      west: z.coerce.number().min(-180).max(180).optional(),
+      south: z.coerce.number().min(-90).max(90).optional(),
+      east: z.coerce.number().min(-180).max(180).optional(),
+      north: z.coerce.number().min(-90).max(90).optional(),
+    })
+    .parse(params);
+  const bbox = [p.west, p.south, p.east, p.north];
+  if (
+    bbox.some((x) => x !== undefined) &&
+    (bbox.some((x) => x === undefined) ||
+      p.west! >= p.east! ||
+      p.south! >= p.north!)
+  )
+    throw new ApiError(400, "BBOX", "Provide ordered west,south,east,north");
+  const r = await repository.selectGeoFeatures(
+    [id, p.limit, p.offset, ...bbox.map((x) => x ?? null)],
+    undefined,
+    [publicVersion],
+  );
+  return {
+    type: "FeatureCollection",
+    features: r.rows.map(({ geometry, ...properties }) => ({
+      type: "Feature",
+      geometry,
+      properties,
+    })),
+    meta: p,
+  };
+}
+export async function boundary(id: string) {
+  uuid.parse(id);
+  return {
+    data: (
+      await repository.selectGeoBoundaries([id], undefined, [publicVersion])
+    ).rows,
+  };
+}
+export async function compare(input: unknown) {
+  const p = z
+    .object({
+      areaIds: z.array(uuid).min(2).max(4),
+      metricCode: z.string().min(1).max(100),
+      categoryCode: z.string().max(100).default(""),
+      periodStart: z.iso.date(),
+      periodEnd: z.iso.date(),
+      unitId: uuid,
+    })
+    .strict()
+    .parse(input);
+  const r = await repository.selectVId2(
+    [
+      p.areaIds,
+      p.metricCode,
+      p.categoryCode,
+      p.periodStart,
+      p.periodEnd,
+      p.unitId,
+    ],
+    undefined,
+    [publicVersion],
+  );
+  return {
+    data: p.areaIds.map((areaId) => ({
+      areaId,
+      status: r.rows.some((x) => x.area_id === areaId)
+        ? "available"
+        : "unavailable",
+      observations: r.rows.filter((x) => x.area_id === areaId),
+    })),
+    meta: p,
+  };
+}
+export function csvCell(value: unknown) {
+  const s =
+    value == null
+      ? ""
+      : typeof value === "object"
+        ? JSON.stringify(value)
+        : String(value);
+  return '"' + (/^[=+\-@\t\r]/.test(s) ? "'" + s : s).replace(/"/g, '""') + '"';
+}
+export async function exportDataset(
+  id: string,
+  resource: string,
+  params: Record<string, string>,
+) {
+  uuid.parse(id);
+  const d = definition(resource);
+  if (d.scope !== "admin" || !d.columns.dataset_version_id)
+    throw new ApiError(
+      400,
+      "EXPORT_RESOURCE",
+      "Choose a version-bound GIS or content resource",
+    );
+  const p = pageQuery.parse(params);
+  const v = (
+    await repository.selectDataDatasetVersions([id], undefined, [publicVersion])
+  ).rows[0];
+  if (!v)
+    throw new ApiError(
+      403,
+      "EXPORT_NOT_PERMITTED",
+      "This version does not permit public export",
+    );
+  const rows = (
+    await repository.selectSession([id, p.limit, p.offset], undefined, [
+      selectColumns(resource),
+      resource,
+    ])
+  ).rows;
+  const columns = Object.keys(d.columns).filter(
+    (x) => x !== "source_record_id",
+  );
+  const text = [
+    columns.map(csvCell).join(","),
+    ...rows.map((row) => columns.map((k) => csvCell(row[k])).join(",")),
+  ].join("\r\n");
+  return new Response(text, {
+    headers: {
+      "Content-Type": "text/csv; charset=utf-8",
+      "Content-Disposition": 'attachment; filename="iaa-export.csv"',
+      "X-Content-Type-Options": "nosniff",
+      "Cache-Control": "no-store",
+      "X-Page-Limit": String(p.limit),
+      "X-Page-Offset": String(p.offset),
+    },
+  });
+}
+export async function publicProfile(id: string) {
+  uuid.parse(id);
+  const r = (await repository.selectProjectVersions([id], undefined)).rows[0];
+  if (!r) throw new ApiError(404, "NOT_FOUND", "No released profile");
+  const out: Record<string, unknown> = { project_id: id, version_id: r.id };
+  for (const f of r.public_fields)
+    if (
+      [
+        "name",
+        "code",
+        "area_id",
+        "model_id",
+        "typology_id",
+        "status",
+        "capacity_dc_mwp",
+        "summary",
+        "objective",
+        "capacity_ac_mw",
+        "site_area_ha",
+        "cultivated_area_ha",
+        "commissioned_on",
+        "ownership_model_id",
+        "land_ownership_model_id",
+      ].includes(f)
+    )
+      out[f] = r[f];
+  if (r.public_fields.includes("point"))
+    out.geometry = (
+      await repository.selectProjectVersions2([r.id], undefined)
+    ).rows[0].geometry;
+  for (const child of [
+    "notes",
+    "designs",
+    "crop_plans",
+    "grid_connections",
+    "land_uses",
+    "partners",
+  ])
+    if (r.public_fields.includes(child)) {
+      const table =
+        child === "notes" ? "project.profile_notes" : "project." + child;
+      let cols = Object.keys(definition(table).columns).filter(
+        (c) =>
+          ![
+            "id",
+            "created_at",
+            "project_version_id",
+            "approval_file_id",
+          ].includes(c),
+      );
+      if (child === "grid_connections")
+        cols = cols.filter(
+          (c) =>
+            !["connection_code", "tariff_inr_kwh", "tariff_category"].includes(
+              c,
+            ),
+        );
+      out[child] = (
+        await repository.selectSession2([r.id], undefined, [
+          cols,
+          table,
+          child === "notes" ? "AND visibility='public'" : "",
+        ])
+      ).rows;
+    }
+  if (r.public_fields.includes("documents"))
+    out.documents = (
+      await repository.selectProjectDocuments([r.id], undefined)
+    ).rows;
+  return { data: out };
+}
+export async function home() {
+  const coverage = (await repository.selectSession3([], undefined)).rows;
+  const updates = (
+    await repository.selectDataDatasets([], undefined, [publicVersion])
+  ).rows;
+  return {
+    data: { coverage, updates },
+    meta: {
+      coverage:
+        "Counts describe published records only, not total national infrastructure. Livestock facilities require actual source records with that facility type.",
+    },
+  };
+}

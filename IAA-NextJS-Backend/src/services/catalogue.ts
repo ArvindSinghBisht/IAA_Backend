@@ -1,16 +1,78 @@
-import {z} from 'zod';
-import {query} from '@/lib/db';
-import {ApiError,pageQuery,uuid} from '@/lib/http';
-const released=`v.status='approved' AND v.is_current AND v.public_allowed AND NOT v.is_demo AND d.is_active`;
-export async function catalogue(kind:string,params:Record<string,string>){
- const p=pageQuery.extend({areaId:uuid.optional(),theme:z.string().max(100).optional()}).parse(params);
- if(kind==='resources')return {data:(await query(`SELECT r.id,r.code,r.resource_type,r.theme,rv.id AS version_id,rv.title,rv.body,rv.external_uri,rv.published_date,rv.locale_id,rv.file_id,v.id AS dataset_version_id,v.reference_start,v.reference_end,s.name AS source FROM content.resources r JOIN content.resource_versions rv ON rv.resource_id=r.id JOIN data.dataset_versions v ON v.id=rv.dataset_version_id JOIN data.datasets d ON d.id=v.dataset_id JOIN data.sources s ON s.id=d.source_id WHERE ${released} AND ($1='' OR rv.title ILIKE '%'||$1||'%') AND ($2::text IS NULL OR r.theme=$2) AND ($3::uuid IS NULL OR EXISTS(SELECT 1 FROM content.resource_areas a WHERE a.resource_id=r.id AND a.area_id=$3)) ORDER BY rv.published_date DESC NULLS LAST,rv.id LIMIT $4 OFFSET $5`,[p.q,p.theme??null,p.areaId??null,p.limit,p.offset])).rows,meta:p};
- if(kind==='policies')return {data:(await query(`SELECT p.id,p.code,p.name,p.kind,pv.id AS version_id,pv.effective_from,pv.effective_to,pv.status,pv.eligibility,pv.benefits,pv.summary,pv.review_due,pv.file_id,v.id AS dataset_version_id,s.name AS source FROM content.policies p JOIN content.policy_versions pv ON pv.policy_id=p.id JOIN data.dataset_versions v ON v.id=pv.dataset_version_id JOIN data.datasets d ON d.id=v.dataset_id JOIN data.sources s ON s.id=d.source_id WHERE ${released} AND ($1='' OR p.name ILIKE '%'||$1||'%') AND ($2::uuid IS NULL OR EXISTS(SELECT 1 FROM content.policy_areas a WHERE a.policy_version_id=pv.id AND a.area_id=$2)) ORDER BY p.name,pv.id LIMIT $3 OFFSET $4`,[p.q,p.areaId??null,p.limit,p.offset])).rows,meta:{...p,eligibility:'Published rules; eligibility and entitlement require verification.'}};
- throw new ApiError(404,'NOT_FOUND','Unknown catalogue');
+import * as repository from "@/repositories/catalogue.repository";
+import { z } from "zod";
+
+import { ApiError, pageQuery, uuid } from "@/lib/http";
+const released = `v.status='approved' AND v.is_current AND v.public_allowed AND NOT v.is_demo AND d.is_active`;
+export async function catalogue(kind: string, params: Record<string, string>) {
+  const p = pageQuery
+    .extend({ areaId: uuid.optional(), theme: z.string().max(100).optional() })
+    .parse(params);
+  if (kind === "resources")
+    return {
+      data: (
+        await repository.selectContentResources(
+          [p.q, p.theme ?? null, p.areaId ?? null, p.limit, p.offset],
+          undefined,
+          [released],
+        )
+      ).rows,
+      meta: p,
+    };
+  if (kind === "policies")
+    return {
+      data: (
+        await repository.selectContentPolicies(
+          [p.q, p.areaId ?? null, p.limit, p.offset],
+          undefined,
+          [released],
+        )
+      ).rows,
+      meta: {
+        ...p,
+        eligibility:
+          "Published rules; eligibility and entitlement require verification.",
+      },
+    };
+  throw new ApiError(404, "NOT_FOUND", "Unknown catalogue");
 }
-export async function district(id:string,params:Record<string,string>){uuid.parse(id);const p=pageQuery.parse(params);const area=(await query('SELECT id,name,level,parent_id,code FROM geo.areas WHERE id=$1',[id])).rows[0];if(!area)throw new ApiError(404,'NOT_FOUND','Area not found');
- const rows=(await query(`SELECT o.id,o.metric_code,o.category_code,o.period_start,o.period_end,o.value,o.value_status,o.unit_id,o.method_reference,o.dataset_version_id,s.name AS source,v.coverage_notes FROM wp1.environment_observations o JOIN data.dataset_versions v ON v.id=o.dataset_version_id JOIN data.datasets d ON d.id=v.dataset_id JOIN data.sources s ON s.id=d.source_id WHERE o.area_id=$1 AND ${released} ORDER BY o.metric_code,o.period_end DESC,o.id LIMIT $2 OFFSET $3`,[id,p.limit,p.offset])).rows;
- return {data:{area,observations:rows},meta:{...p,coverage:'Exact area only; livestock metrics appear when supplied as approved environmental observations. Missing metrics are unavailable, not zero.'}};
+export async function district(id: string, params: Record<string, string>) {
+  uuid.parse(id);
+  const p = pageQuery.parse(params);
+  const area = (await repository.selectGeoAreas([id], undefined)).rows[0];
+  if (!area) throw new ApiError(404, "NOT_FOUND", "Area not found");
+  const rows = (
+    await repository.selectVId([id, p.limit, p.offset], undefined, [released])
+  ).rows;
+  return {
+    data: { area, observations: rows },
+    meta: {
+      ...p,
+      coverage:
+        "Exact area only; livestock metrics appear when supplied as approved environmental observations. Missing metrics are unavailable, not zero.",
+    },
+  };
 }
-export async function masters(kind:string){const tables={crops:'core.crops',seasons:'core.seasons',units:'core.units',models:'core.models',locales:'core.locales',practices:'core.practices'};const table=Object.hasOwn(tables,kind)?tables[kind as keyof typeof tables]:undefined;if(!table)throw new ApiError(404,'NOT_FOUND','Unknown reference catalogue');return {data:(await query(`SELECT * FROM ${table} ORDER BY code LIMIT 1000`)).rows};}
-export async function datasetDetail(id:string){uuid.parse(id);const r=await query(`SELECT d.id,d.code,d.title,d.domain_no,d.update_frequency,d.spatial_resolution,v.id AS version_id,v.version_label,v.reference_start,v.reference_end,v.coverage_notes,v.limitations,v.export_allowed,s.name AS source,s.source_uri,s.licence,s.rights_notes FROM data.datasets d JOIN data.dataset_versions v ON v.dataset_id=d.id JOIN data.sources s ON s.id=d.source_id WHERE d.id=$1 AND ${released}`,[id]);if(!r.rowCount)throw new ApiError(404,'NOT_FOUND','No published dataset');return {data:r.rows};}
+export async function masters(kind: string) {
+  const tables = {
+    crops: "core.crops",
+    seasons: "core.seasons",
+    units: "core.units",
+    models: "core.models",
+    locales: "core.locales",
+    practices: "core.practices",
+  };
+  const table = Object.hasOwn(tables, kind)
+    ? tables[kind as keyof typeof tables]
+    : undefined;
+  if (!table)
+    throw new ApiError(404, "NOT_FOUND", "Unknown reference catalogue");
+  return {
+    data: (await repository.selectSession([], undefined, [table])).rows,
+  };
+}
+export async function datasetDetail(id: string) {
+  uuid.parse(id);
+  const r = await repository.selectDataDatasets([id], undefined, [released]);
+  if (!r.rowCount) throw new ApiError(404, "NOT_FOUND", "No published dataset");
+  return { data: r.rows };
+}

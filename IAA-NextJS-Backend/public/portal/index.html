@@ -1171,7 +1171,7 @@ function planParamLabel(p){
 function ensureInfoLayer(){
   if(!(infoLayer||infoLayerStatus==='fetching')){
     infoLayerStatus='fetching';
-    fetch('data/information-layer.json').then(r=>{
+    fetch('/api/v1/wp1/information-layer').then(r=>{
       if(!r.ok)throw new Error('HTTP '+r.status);
       return r.json();
     }).then(data=>{
@@ -1185,7 +1185,7 @@ function ensureInfoLayer(){
   }
   if(!(layerIndex||layerIndexStatus==='fetching')){
     layerIndexStatus='fetching';
-    fetch('data/information-layer-index.json').then(r=>{
+    fetch('/api/v1/wp1/information-layer/index').then(r=>{
       if(!r.ok)throw new Error('HTTP '+r.status);
       return r.json();
     }).then(data=>{

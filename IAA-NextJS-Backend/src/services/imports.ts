@@ -1,21 +1,290 @@
-import {z} from 'zod';
-import ExcelJS from 'exceljs';
-import {transaction,query} from '@/lib/db';
-import type {Actor} from '@/lib/auth';
-import {admin,audit} from '@/lib/governance';
-import {ApiError,uuid,pageQuery} from '@/lib/http';
-import {definition,insertResource,resourceInput} from './resources';
-import {digest} from './monitoring-validation';
-export function parseCsv(s:string){const rows:string[][]=[];let row:string[]=[],cell='',quoted=false;for(let i=0;i<s.length;i++){const ch=s[i];if(quoted){if(ch==='"'&&s[i+1]==='"'){cell+='"';i++;}else if(ch==='"')quoted=false;else cell+=ch;}else if(ch==='"'&&cell==='')quoted=true;else if(ch===','){row.push(cell);cell='';}else if(ch==='\n'){row.push(cell.replace(/\r$/,''));rows.push(row);row=[];cell='';}else cell+=ch;}if(quoted)throw new ApiError(400,'CSV_QUOTES','Unclosed quoted CSV cell');if(row.length||cell){row.push(cell.replace(/\r$/,''));rows.push(row);}return rows;}
-export const importInput=z.object({datasetVersionId:uuid,fileId:uuid,sheet:z.string().max(100).default('Sheet1'),target:z.string().max(100),headerRows:z.number().int().min(0).max(20).default(1),mapping:z.record(z.string(),z.number().int().min(0).max(299)),constants:z.record(z.string(),z.json()).default({}),idempotencyKey:z.string().min(8).max(150)}).strict();
-function convert(value:unknown,type:string){if(value===null||value===undefined||value==='')return null;if(type==='integer'||type==='smallint'||type==='bigint'||type.startsWith('numeric')){const n=Number(String(value).replace(/,/g,''));if(!Number.isFinite(n))throw new Error('Invalid number');return n;}if(type==='boolean'){if(value===true||value==='true'||value==='TRUE'||value===1)return true;if(value===false||value==='false'||value==='FALSE'||value===0)return false;throw new Error('Invalid boolean');}if(type==='jsonb'||type.startsWith('geometry'))return typeof value==='string'?JSON.parse(value):value;if(type==='date')return value instanceof Date?value.toISOString().slice(0,10):String(value);return String(value);}
-export async function runImport(a:Actor,input:unknown){admin(a);const p=importInput.parse(input),d=definition(p.target);if(d.scope!=='admin'||!d.columns.dataset_version_id)throw new ApiError(400,'IMPORT_TARGET','Choose a version-bound GIS or content resource');const f=(await query("SELECT f.*,p.content FROM data.files f JOIN data.file_payloads p ON p.file_id=f.id WHERE f.id=$1 AND f.scan_status='clean'",[p.fileId])).rows[0];if(!f)throw new ApiError(422,'FILE_REVIEW_REQUIRED','Upload and review the source file first');let rows:unknown[][];
- if(f.mime_type.includes('spreadsheetml')){const workbook=new ExcelJS.Workbook();await workbook.xlsx.load(f.content);const sheet=workbook.getWorksheet(p.sheet);if(!sheet)throw new ApiError(400,'SHEET_MISSING','Sheet name not found');if(sheet.rowCount>10001||sheet.columnCount>300)throw new ApiError(413,'WORKBOOK_SIZE','Maximum 10,000 data rows and 300 columns');rows=[];sheet.eachRow({includeEmpty:true},row=>{rows.push(Array.from({length:sheet.columnCount},(_,i)=>{const v=row.getCell(i+1).value;if(v&&typeof v==='object'&&'formula' in v)return {formula:v.formula,result:v.result};return v;}));});}
- else if(f.mime_type==='text/csv')rows=parseCsv(f.content.toString('utf8').replace(/^\uFEFF/,''));else if(f.mime_type==='application/json'){const json=JSON.parse(f.content.toString('utf8'));rows=z.array(z.array(z.unknown())).max(10001).parse(json);}else throw new ApiError(415,'IMPORT_FORMAT','Use XLSX, CSV, or JSON arrays of arrays');if(rows.length>10001||rows.some(r=>r.length>300))throw new ApiError(413,'IMPORT_SIZE','Maximum 10,000 rows and 300 columns');
- for(const field of Object.keys(p.mapping))if(!Object.hasOwn(d.columns,field)||['id','created_at','dataset_version_id','source_record_id'].includes(field))throw new ApiError(400,'MAPPING_FIELD','Unknown or reserved mapping field');for(const field of Object.keys(p.constants))if(['id','created_at','dataset_version_id','source_record_id'].includes(field))throw new ApiError(400,'MAPPING_FIELD','Reserved constant field');const fingerprint=digest({version:p.datasetVersionId,file:f.sha256,mapping:p.mapping,constants:p.constants,target:p.target,headerRows:p.headerRows,sheet:p.sheet});
- return transaction(async c=>{const version=(await c.query('SELECT status FROM data.dataset_versions WHERE id=$1 FOR UPDATE',[p.datasetVersionId])).rows[0];const key=digest({key:p.idempotencyKey,version:p.datasetVersionId});const old=(await c.query('SELECT * FROM data.import_jobs WHERE idempotency_key=$1',[key])).rows[0];if(old){if(old.mapping.fingerprint!==fingerprint)throw new ApiError(409,'IDEMPOTENCY_CONFLICT','Import key was used for another file or mapping');return old;}if(version?.status!=='draft')throw new ApiError(409,'IMMUTABLE','Import into a draft dataset version');const job=(await c.query(`INSERT INTO data.import_jobs(version_id,started_by,status,parser_version,mapping,idempotency_key) VALUES($1,$2,'running','xlsx-csv-v1',$3,$4) RETURNING id`,[p.datasetVersionId,a.id,JSON.stringify({...p,fingerprint}),key])).rows[0];let accepted=0,quarantined=0;
- for(let i=p.headerRows;i<rows.length;i++){const raw=rows[i];if(raw.every(x=>x===null||x===undefined||x===''))continue;const sr=(await c.query('INSERT INTO data.source_records(import_job_id,sheet_name,row_number,raw_cells) VALUES($1,$2,$3,$4) RETURNING id',[job.id,p.sheet,i+1,JSON.stringify(raw)])).rows[0];await c.query('SAVEPOINT import_row');try{const normalized:Record<string,unknown>={...p.constants,dataset_version_id:p.datasetVersionId};if(d.columns.source_record_id)normalized.source_record_id=sr.id;for(const [name,index] of Object.entries(p.mapping)){let value=raw[index];if(value&&typeof value==='object'&&'formula' in value)throw new Error('Formula cells require explicit reviewed values');value=convert(value,d.columns[name].type);if(value!==null||d.columns[name].required||d.columns[name].nullable)normalized[name]=value;}
- resourceInput(p.target,normalized);await insertResource(c,p.target,normalized);await c.query("UPDATE data.source_records SET status='accepted',normalised_payload=$2 WHERE id=$1",[sr.id,JSON.stringify(normalized)]);accepted++;await c.query('RELEASE SAVEPOINT import_row');}catch{await c.query('ROLLBACK TO SAVEPOINT import_row');await c.query("UPDATE data.source_records SET status='quarantined' WHERE id=$1",[sr.id]);await c.query("INSERT INTO data.quality_issues(source_record_id,issue_code,severity,message) VALUES($1,'ROW_VALIDATION','error','Row failed field mapping, type, reference or constraint validation. Review original cells.')",[sr.id]);quarantined++;await c.query('RELEASE SAVEPOINT import_row');}}
- const result=(await c.query("UPDATE data.import_jobs SET status='completed',finished_at=now(),row_counts=$2 WHERE id=$1 RETURNING id,status,row_counts",[job.id,JSON.stringify({accepted,quarantined})])).rows[0];await audit(c,a,'data.import_jobs',job.id,'import_completed',{accepted,quarantined});return result;});}
-export async function importRows(a:Actor,id:string,params:Record<string,string>){admin(a);uuid.parse(id);const p=pageQuery.parse(params);return {data:(await query('SELECT r.*,COALESCE((SELECT jsonb_agg(q) FROM data.quality_issues q WHERE q.source_record_id=r.id),\'[]\'::jsonb) AS issues FROM data.source_records r WHERE import_job_id=$1 ORDER BY row_number LIMIT $2 OFFSET $3',[id,p.limit,p.offset])).rows};}
-export async function resolveIssue(a:Actor,id:string,input:unknown){admin(a);uuid.parse(id);const p=z.object({resolution:z.string().trim().min(1).max(2000)}).strict().parse(input);return transaction(async c=>{const row=(await c.query('UPDATE data.quality_issues SET resolved_by=$2,resolved_at=now(),resolution=$3 WHERE id=$1 AND resolved_at IS NULL RETURNING id',[id,a.id,p.resolution])).rows[0];if(!row)throw new ApiError(404,'NOT_FOUND','Unresolved issue not found');await audit(c,a,'data.quality_issues',id,'issue_resolved');return row;});}
+import * as repository from "@/repositories/imports.repository";
+import { z } from "zod";
+import ExcelJS from "exceljs";
+import { unitOfWork as transaction } from "@/infrastructure/database/unit-of-work";
+import type { Actor } from "@/lib/auth";
+import { admin, audit } from "@/lib/governance";
+import { ApiError, uuid, pageQuery } from "@/lib/http";
+import { definition, insertResource, resourceInput } from "./resources";
+import { digest } from "./monitoring-validation";
+export function parseCsv(s: string) {
+  const rows: string[][] = [];
+  let row: string[] = [],
+    cell = "",
+    quoted = false;
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
+    if (quoted) {
+      if (ch === '"' && s[i + 1] === '"') {
+        cell += '"';
+        i++;
+      } else if (ch === '"') quoted = false;
+      else cell += ch;
+    } else if (ch === '"' && cell === "") quoted = true;
+    else if (ch === ",") {
+      row.push(cell);
+      cell = "";
+    } else if (ch === "\n") {
+      row.push(cell.replace(/\r$/, ""));
+      rows.push(row);
+      row = [];
+      cell = "";
+    } else cell += ch;
+  }
+  if (quoted) throw new ApiError(400, "CSV_QUOTES", "Unclosed quoted CSV cell");
+  if (row.length || cell) {
+    row.push(cell.replace(/\r$/, ""));
+    rows.push(row);
+  }
+  return rows;
+}
+export const importInput = z
+  .object({
+    datasetVersionId: uuid,
+    fileId: uuid,
+    sheet: z.string().max(100).default("Sheet1"),
+    target: z.string().max(100),
+    headerRows: z.number().int().min(0).max(20).default(1),
+    mapping: z.record(z.string(), z.number().int().min(0).max(299)),
+    constants: z.record(z.string(), z.json()).default({}),
+    idempotencyKey: z.string().min(8).max(150),
+  })
+  .strict();
+function convert(value: unknown, type: string) {
+  if (value === null || value === undefined || value === "") return null;
+  if (
+    type === "integer" ||
+    type === "smallint" ||
+    type === "bigint" ||
+    type.startsWith("numeric")
+  ) {
+    const n = Number(String(value).replace(/,/g, ""));
+    if (!Number.isFinite(n)) throw new Error("Invalid number");
+    return n;
+  }
+  if (type === "boolean") {
+    if (value === true || value === "true" || value === "TRUE" || value === 1)
+      return true;
+    if (
+      value === false ||
+      value === "false" ||
+      value === "FALSE" ||
+      value === 0
+    )
+      return false;
+    throw new Error("Invalid boolean");
+  }
+  if (type === "jsonb" || type.startsWith("geometry"))
+    return typeof value === "string" ? JSON.parse(value) : value;
+  if (type === "date")
+    return value instanceof Date
+      ? value.toISOString().slice(0, 10)
+      : String(value);
+  return String(value);
+}
+export async function runImport(a: Actor, input: unknown) {
+  admin(a);
+  const p = importInput.parse(input),
+    d = definition(p.target);
+  if (d.scope !== "admin" || !d.columns.dataset_version_id)
+    throw new ApiError(
+      400,
+      "IMPORT_TARGET",
+      "Choose a version-bound GIS or content resource",
+    );
+  const f = (await repository.selectDataFiles([p.fileId], undefined)).rows[0];
+  if (!f)
+    throw new ApiError(
+      422,
+      "FILE_REVIEW_REQUIRED",
+      "Upload and review the source file first",
+    );
+  let rows: unknown[][];
+  if (f.mime_type.includes("spreadsheetml")) {
+    const workbook = new ExcelJS.Workbook();
+    await workbook.xlsx.load(f.content);
+    const sheet = workbook.getWorksheet(p.sheet);
+    if (!sheet)
+      throw new ApiError(400, "SHEET_MISSING", "Sheet name not found");
+    if (sheet.rowCount > 10001 || sheet.columnCount > 300)
+      throw new ApiError(
+        413,
+        "WORKBOOK_SIZE",
+        "Maximum 10,000 data rows and 300 columns",
+      );
+    rows = [];
+    sheet.eachRow({ includeEmpty: true }, (row) => {
+      rows.push(
+        Array.from({ length: sheet.columnCount }, (_, i) => {
+          const v = row.getCell(i + 1).value;
+          if (v && typeof v === "object" && "formula" in v)
+            return { formula: v.formula, result: v.result };
+          return v;
+        }),
+      );
+    });
+  } else if (f.mime_type === "text/csv")
+    rows = parseCsv(f.content.toString("utf8").replace(/^\uFEFF/, ""));
+  else if (f.mime_type === "application/json") {
+    const json = JSON.parse(f.content.toString("utf8"));
+    rows = z.array(z.array(z.unknown())).max(10001).parse(json);
+  } else
+    throw new ApiError(
+      415,
+      "IMPORT_FORMAT",
+      "Use XLSX, CSV, or JSON arrays of arrays",
+    );
+  if (rows.length > 10001 || rows.some((r) => r.length > 300))
+    throw new ApiError(
+      413,
+      "IMPORT_SIZE",
+      "Maximum 10,000 rows and 300 columns",
+    );
+  for (const field of Object.keys(p.mapping))
+    if (
+      !Object.hasOwn(d.columns, field) ||
+      ["id", "created_at", "dataset_version_id", "source_record_id"].includes(
+        field,
+      )
+    )
+      throw new ApiError(
+        400,
+        "MAPPING_FIELD",
+        "Unknown or reserved mapping field",
+      );
+  for (const field of Object.keys(p.constants))
+    if (
+      ["id", "created_at", "dataset_version_id", "source_record_id"].includes(
+        field,
+      )
+    )
+      throw new ApiError(400, "MAPPING_FIELD", "Reserved constant field");
+  const fingerprint = digest({
+    version: p.datasetVersionId,
+    file: f.sha256,
+    mapping: p.mapping,
+    constants: p.constants,
+    target: p.target,
+    headerRows: p.headerRows,
+    sheet: p.sheet,
+  });
+  return transaction(async (c) => {
+    const version = (
+      await repository.selectDataDatasetVersions([p.datasetVersionId], c)
+    ).rows[0];
+    const key = digest({ key: p.idempotencyKey, version: p.datasetVersionId });
+    const old = (await repository.selectDataImportJobs([key], c)).rows[0];
+    if (old) {
+      if (old.mapping.fingerprint !== fingerprint)
+        throw new ApiError(
+          409,
+          "IDEMPOTENCY_CONFLICT",
+          "Import key was used for another file or mapping",
+        );
+      return old;
+    }
+    if (version?.status !== "draft")
+      throw new ApiError(
+        409,
+        "IMMUTABLE",
+        "Import into a draft dataset version",
+      );
+    const job = (
+      await repository.insertDataImportJobs(
+        [p.datasetVersionId, a.id, JSON.stringify({ ...p, fingerprint }), key],
+        c,
+      )
+    ).rows[0];
+    let accepted = 0,
+      quarantined = 0;
+    for (let i = p.headerRows; i < rows.length; i++) {
+      const raw = rows[i];
+      if (raw.every((x) => x === null || x === undefined || x === "")) continue;
+      const sr = (
+        await repository.insertDataSourceRecords(
+          [job.id, p.sheet, i + 1, JSON.stringify(raw)],
+          c,
+        )
+      ).rows[0];
+      await repository.savepointSession([], c);
+      try {
+        const normalized: Record<string, unknown> = {
+          ...p.constants,
+          dataset_version_id: p.datasetVersionId,
+        };
+        if (d.columns.source_record_id) normalized.source_record_id = sr.id;
+        for (const [name, index] of Object.entries(p.mapping)) {
+          let value = raw[index];
+          if (value && typeof value === "object" && "formula" in value)
+            throw new Error("Formula cells require explicit reviewed values");
+          value = convert(value, d.columns[name].type);
+          if (
+            value !== null ||
+            d.columns[name].required ||
+            d.columns[name].nullable
+          )
+            normalized[name] = value;
+        }
+        resourceInput(p.target, normalized);
+        await insertResource(c, p.target, normalized);
+        await repository.updateDataSourceRecords(
+          [sr.id, JSON.stringify(normalized)],
+          c,
+        );
+        accepted++;
+        await repository.releaseSession([], c);
+      } catch {
+        await repository.rollbackSession([], c);
+        await repository.updateDataSourceRecords2([sr.id], c);
+        await repository.insertDataQualityIssues([sr.id], c);
+        quarantined++;
+        await repository.releaseSession2([], c);
+      }
+    }
+    const result = (
+      await repository.updateDataImportJobs(
+        [job.id, JSON.stringify({ accepted, quarantined })],
+        c,
+      )
+    ).rows[0];
+    await audit(c, a, "data.import_jobs", job.id, "import_completed", {
+      accepted,
+      quarantined,
+    });
+    return result;
+  });
+}
+export async function importRows(
+  a: Actor,
+  id: string,
+  params: Record<string, string>,
+) {
+  admin(a);
+  uuid.parse(id);
+  const p = pageQuery.parse(params);
+  return {
+    data: (
+      await repository.selectDataQualityIssues(
+        [id, p.limit, p.offset],
+        undefined,
+      )
+    ).rows,
+  };
+}
+export async function resolveIssue(a: Actor, id: string, input: unknown) {
+  admin(a);
+  uuid.parse(id);
+  const p = z
+    .object({ resolution: z.string().trim().min(1).max(2000) })
+    .strict()
+    .parse(input);
+  return transaction(async (c) => {
+    const row = (
+      await repository.updateDataQualityIssues([id, a.id, p.resolution], c)
+    ).rows[0];
+    if (!row)
+      throw new ApiError(404, "NOT_FOUND", "Unresolved issue not found");
+    await audit(c, a, "data.quality_issues", id, "issue_resolved");
+    return row;
+  });
+}

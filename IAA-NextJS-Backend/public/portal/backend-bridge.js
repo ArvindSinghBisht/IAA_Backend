@@ -1,4 +1,5 @@
 (() => {
+  if (!['localhost','127.0.0.1'].includes(location.hostname) || !new URLSearchParams(location.search).has('debug')) return;
   const apiBase = '/api/v1';
   const css = `
     #iaa-backend-open{margin-left:10px;padding:8px 12px;border:1px solid #c9d5e6;border-radius:6px;background:#fff;color:#24344b;font:600 12px Arial,sans-serif;cursor:pointer}

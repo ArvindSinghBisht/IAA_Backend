@@ -1,3 +1,7 @@
+# Version 0.3 API architecture
+
+Each implemented endpoint now has its own native Next.js route module. See PROFESSIONAL_BACKEND.md for the refactor and WORKFLOWS.md for existing payload contracts. The current manifest is src/generated/route-manifest.json; OpenAPI is served at /api/v1/openapi. Send application/json on JSON writes. API consumers never receive database credentials or a database driver.
+
 # API reference
 
 Base: `/api/v1`.

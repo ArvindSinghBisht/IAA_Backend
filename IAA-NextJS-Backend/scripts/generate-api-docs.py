@@ -1,7 +1,7 @@
 from pathlib import Path
 import json
 resources=json.loads(Path('src/generated/resources.json').read_text())
-api={'openapi':'3.1.0','info':{'title':'IAA portal backend','version':'0.2.0','description':'WP1 GIS, WP2 versioned planning and WP3 governed monitoring. See START_HERE.md for setup and method limitations.'},'servers':[{'url':'http://localhost:3000/api/v1'}],'components':{'securitySchemes':{'bearerAuth':{'type':'http','scheme':'bearer','bearerFormat':'JWT'},'planningToken':{'type':'apiKey','in':'header','name':'X-Planning-Token'}},'schemas':{}},'paths':{}}
+api={'openapi':'3.1.0','info':{'title':'IAA portal backend','version':'0.3.0','description':'WP1 GIS, WP2 versioned planning and WP3 governed monitoring. See START_HERE.md for setup and method limitations.'},'servers':[{'url':'http://localhost:3000/api/v1'}],'components':{'securitySchemes':{'bearerAuth':{'type':'http','scheme':'bearer','bearerFormat':'JWT'},'planningToken':{'type':'apiKey','in':'header','name':'X-Planning-Token'}},'schemas':{}},'paths':{}}
 reserved={'id','created_at','approved_at','approved_by'}
 states={'data.dataset_versions','mon.form_versions','plan.method_versions'}
 for table,d in resources.items():
@@ -39,6 +39,8 @@ endpoints=[
 ('GET','/wp3/projects/{id}/obligations','user'),('GET','/wp3/projects/{id}/dashboard','user'),('GET','/wp3/obligations/{id}/form','user'),('POST','/wp3/submissions','user'),('GET','/wp3/submissions/{id}','user'),('PUT','/wp3/submissions/{id}/values','user'),('POST','/wp3/submissions/{id}/validate','user'),('POST','/wp3/submissions/{id}/transition','user'),('POST','/wp3/submissions/{id}/correct','user'),('POST','/wp3/submissions/{id}/release','user'),('GET','/wp3/submissions/{id}/history','user'),('GET','/wp3/submissions/{id}/records/{kind}','user'),('POST','/wp3/submissions/{id}/records/{kind}','user'),('DELETE','/wp3/submissions/{id}/records/{kind}/{recordId}','user'),
 ('GET','/queries','user'),('POST','/queries','user'),('POST','/queries/{id}/answer','admin'),('GET','/notifications','user'),('POST','/notifications/{id}/read','user')]
 import re
+manifest=json.loads(Path('src/generated/route-manifest.json').read_text())
+endpoints=[(r['method'],'/'+re.sub(r'\[([^]]+)\]',r'{\1}',r['path']), 'public' if r['access']=='public' else 'planning' if r['access']=='planning' else 'user') for r in manifest]
 for method,path,scope in endpoints:
  params=[{'name':x,'in':'path','required':True,'schema':{'type':'string'}} for x in re.findall(r'\{(\w+)\}',path)]
  op={'summary':method+' '+path,'tags':[scope],'security':[] if scope=='public' else [{'planningToken':[]}] if scope=='planning' else [{'bearerAuth':[]}],'parameters':params,'responses':{'200':{'description':'Success; see docs/WORKFLOWS.md for response details'},'400':{'description':'Invalid input'},'403':{'description':'Permission denied'},'409':{'description':'Invalid workflow state'},'422':{'description':'Validation failed'}}}
@@ -50,7 +52,7 @@ lines=['# Resource API index','','All endpoints start `/api/v1`. Use `/manage/re
 for table,d in resources.items():lines.append(f"| `{table}` | {d['scope']} | "+({'admin':'Not required','profile':'Project version UUID','submission':'Submission revision UUID','project':'Project UUID'}[d['scope']])+' |')
 lines+=['','The checked-in OpenAPI file contains exact writable columns and required fields for each resource. SQL constraints enforce units/ranges/references. State and approval fields are controlled by workflow endpoints.','',f'{len(resources)} allowlisted resources; {len(endpoints)} explicit workflow/public routes. This is not arbitrary SQL/table access.']
 Path('docs/RESOURCE_APIS.md').write_text('\n'.join(lines)+'\n')
-collection={'info':{'name':'IAA backend 0.2','schema':'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'},'variable':[{'key':'baseUrl','value':'http://localhost:3000/api/v1'},{'key':'accessToken','value':''},{'key':'planningToken','value':''}],'item':[]}
+collection={'info':{'name':'IAA backend 0.3','schema':'https://schema.getpostman.com/json/collection/v2.1.0/collection.json'},'variable':[{'key':'baseUrl','value':'http://localhost:3000/api/v1'},{'key':'accessToken','value':''},{'key':'planningToken','value':''}],'item':[]}
 for method,path,scope in endpoints:
  headers=[] if scope=='public' else [{'key':'X-Planning-Token','value':'{{planningToken}}'}] if scope=='planning' else [{'key':'Authorization','value':'Bearer {{accessToken}}'}]
  collection['item'].append({'name':method+' '+path,'request':{'method':method,'header':headers,'url':'{{baseUrl}}'+re.sub(r'\{(\w+)\}',r':\1',path)}})

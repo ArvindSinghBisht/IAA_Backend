@@ -2,7 +2,7 @@
   "openapi": "3.1.0",
   "info": {
     "title": "IAA portal backend",
-    "version": "0.2.0",
+    "version": "0.3.0",
     "description": "WP1 GIS, WP2 versioned planning and WP3 governed monitoring. See START_HERE.md for setup and method limitations."
   },
   "servers": [
@@ -19936,9 +19936,9 @@
         }
       }
     },
-    "/wp1/areas": {
+    "/wp1/search": {
       "get": {
-        "summary": "GET /wp1/areas",
+        "summary": "GET /wp1/search",
         "tags": [
           "public"
         ],
@@ -19963,45 +19963,9 @@
         }
       }
     },
-    "/wp1/areas/{id}/boundary": {
+    "/wp1/areas": {
       "get": {
-        "summary": "GET /wp1/areas/{id}/boundary",
-        "tags": [
-          "public"
-        ],
-        "security": [],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "Success; see docs/WORKFLOWS.md for response details"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "403": {
-            "description": "Permission denied"
-          },
-          "409": {
-            "description": "Invalid workflow state"
-          },
-          "422": {
-            "description": "Validation failed"
-          }
-        }
-      }
-    },
-    "/wp1/search": {
-      "get": {
-        "summary": "GET /wp1/search",
+        "summary": "GET /wp1/areas",
         "tags": [
           "public"
         ],
@@ -20080,9 +20044,9 @@
         }
       }
     },
-    "/wp1/layers": {
+    "/wp1/projects": {
       "get": {
-        "summary": "GET /wp1/layers",
+        "summary": "GET /wp1/projects",
         "tags": [
           "public"
         ],
@@ -20107,9 +20071,9 @@
         }
       }
     },
-    "/wp1/layers/{id}/features": {
+    "/wp1/projects/{id}": {
       "get": {
-        "summary": "GET /wp1/layers/{id}/features",
+        "summary": "GET /wp1/projects/{id}",
         "tags": [
           "public"
         ],
@@ -20143,28 +20107,9 @@
         }
       }
     },
-    "/wp1/demo-project": {
+    "/wp1/datasets": {
       "get": {
-        "summary": "GET /wp1/demo-project",
-        "description": "Development-only, illustrative WP1 sample. Does not publish the record to the public project registry.",
-        "tags": [
-          "public"
-        ],
-        "security": [],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Illustrative draft record with illustrative_only=true and publicly_released=false"
-          },
-          "404": {
-            "description": "The record is not seeded or the server is not running in development mode"
-          }
-        }
-      }
-    },
-    "/wp1/projects": {
-      "get": {
-        "summary": "GET /wp1/projects",
+        "summary": "GET /wp1/datasets",
         "tags": [
           "public"
         ],
@@ -20189,9 +20134,9 @@
         }
       }
     },
-    "/wp1/projects/{id}": {
+    "/wp1/datasets/{id}": {
       "get": {
-        "summary": "GET /wp1/projects/{id}",
+        "summary": "GET /wp1/datasets/{id}",
         "tags": [
           "public"
         ],
@@ -20305,46 +20250,9 @@
         }
       }
     },
-    "/wp1/compare": {
-      "post": {
-        "summary": "POST /wp1/compare",
-        "tags": [
-          "public"
-        ],
-        "security": [],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Success; see docs/WORKFLOWS.md for response details"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "403": {
-            "description": "Permission denied"
-          },
-          "409": {
-            "description": "Invalid workflow state"
-          },
-          "422": {
-            "description": "Validation failed"
-          }
-        },
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "object",
-                "description": "Validated by service-specific Zod schema. Concrete examples in docs/WORKFLOWS.md."
-              }
-            }
-          }
-        }
-      }
-    },
-    "/wp1/datasets": {
+    "/wp1/layers": {
       "get": {
-        "summary": "GET /wp1/datasets",
+        "summary": "GET /wp1/layers",
         "tags": [
           "public"
         ],
@@ -20369,9 +20277,9 @@
         }
       }
     },
-    "/wp1/datasets/{id}": {
+    "/wp1/layers/{id}/features": {
       "get": {
-        "summary": "GET /wp1/datasets/{id}",
+        "summary": "GET /wp1/layers/{id}/features",
         "tags": [
           "public"
         ],
@@ -20405,41 +20313,23 @@
         }
       }
     },
-    "/wp1/resources": {
+    "/wp1/areas/{id}/boundary": {
       "get": {
-        "summary": "GET /wp1/resources",
+        "summary": "GET /wp1/areas/{id}/boundary",
         "tags": [
           "public"
         ],
         "security": [],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Success; see docs/WORKFLOWS.md for response details"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "403": {
-            "description": "Permission denied"
-          },
-          "409": {
-            "description": "Invalid workflow state"
-          },
-          "422": {
-            "description": "Validation failed"
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
-        }
-      }
-    },
-    "/wp1/policies": {
-      "get": {
-        "summary": "GET /wp1/policies",
-        "tags": [
-          "public"
         ],
-        "security": [],
-        "parameters": [],
         "responses": {
           "200": {
             "description": "Success; see docs/WORKFLOWS.md for response details"
@@ -20571,6 +20461,178 @@
           },
           "422": {
             "description": "Validation failed"
+          }
+        }
+      }
+    },
+    "/wp1/resources": {
+      "get": {
+        "summary": "GET /wp1/resources",
+        "tags": [
+          "public"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
+    "/wp1/policies": {
+      "get": {
+        "summary": "GET /wp1/policies",
+        "tags": [
+          "public"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
+    "/wp1/demo-project": {
+      "get": {
+        "summary": "GET /wp1/demo-project",
+        "tags": [
+          "public"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
+    "/wp1/information-layer": {
+      "get": {
+        "summary": "GET /wp1/information-layer",
+        "tags": [
+          "public"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
+    "/wp1/information-layer/index": {
+      "get": {
+        "summary": "GET /wp1/information-layer/index",
+        "tags": [
+          "public"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
+    "/wp1/compare": {
+      "post": {
+        "summary": "POST /wp1/compare",
+        "tags": [
+          "public"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Validated by service-specific Zod schema. Concrete examples in docs/WORKFLOWS.md."
+              }
+            }
           }
         }
       }
@@ -21360,7 +21422,7 @@
       "post": {
         "summary": "POST /files/{id}/review",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21406,11 +21468,234 @@
         }
       }
     },
+    "/manage/resources": {
+      "get": {
+        "summary": "GET /manage/resources",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
+    "/manage/resources/{resource}": {
+      "get": {
+        "summary": "GET /manage/resources/{resource}",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "resource",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        }
+      },
+      "post": {
+        "summary": "POST /manage/resources/{resource}",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "resource",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Validated by service-specific Zod schema. Concrete examples in docs/WORKFLOWS.md."
+              }
+            }
+          }
+        }
+      }
+    },
+    "/manage/resources/{resource}/{id}": {
+      "patch": {
+        "summary": "PATCH /manage/resources/{resource}/{id}",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "resource",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        },
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "description": "Validated by service-specific Zod schema. Concrete examples in docs/WORKFLOWS.md."
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "summary": "DELETE /manage/resources/{resource}/{id}",
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "parameters": [
+          {
+            "name": "resource",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
     "/admin/users": {
       "get": {
         "summary": "GET /admin/users",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21439,7 +21724,7 @@
       "post": {
         "summary": "POST /admin/users",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21480,7 +21765,7 @@
       "post": {
         "summary": "POST /admin/users/{id}/deactivate",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21530,7 +21815,7 @@
       "post": {
         "summary": "POST /admin/projects/{id}/memberships",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21580,7 +21865,7 @@
       "get": {
         "summary": "GET /admin/audit",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21611,7 +21896,7 @@
       "post": {
         "summary": "POST /admin/reminders",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21652,7 +21937,7 @@
       "post": {
         "summary": "POST /admin/datasets/{id}/transition",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21702,7 +21987,7 @@
       "post": {
         "summary": "POST /admin/definitions/{kind}/{id}",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21760,7 +22045,7 @@
       "post": {
         "summary": "POST /admin/imports",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21801,7 +22086,7 @@
       "get": {
         "summary": "GET /admin/imports/{id}/rows",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21841,7 +22126,7 @@
       "post": {
         "summary": "POST /admin/issues/{id}/resolve",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -21883,37 +22168,6 @@
                 "description": "Validated by service-specific Zod schema. Concrete examples in docs/WORKFLOWS.md."
               }
             }
-          }
-        }
-      }
-    },
-    "/manage/resources": {
-      "get": {
-        "summary": "GET /manage/resources",
-        "tags": [
-          "admin"
-        ],
-        "security": [
-          {
-            "bearerAuth": []
-          }
-        ],
-        "parameters": [],
-        "responses": {
-          "200": {
-            "description": "Success; see docs/WORKFLOWS.md for response details"
-          },
-          "400": {
-            "description": "Invalid input"
-          },
-          "403": {
-            "description": "Permission denied"
-          },
-          "409": {
-            "description": "Invalid workflow state"
-          },
-          "422": {
-            "description": "Validation failed"
           }
         }
       }
@@ -21958,9 +22212,9 @@
         }
       }
     },
-    "/wp3/projects/{id}/dashboard": {
+    "/wp3/obligations/{id}/form": {
       "get": {
-        "summary": "GET /wp3/projects/{id}/dashboard",
+        "summary": "GET /wp3/obligations/{id}/form",
         "tags": [
           "user"
         ],
@@ -21998,9 +22252,9 @@
         }
       }
     },
-    "/wp3/obligations/{id}/form": {
+    "/wp3/projects/{id}/dashboard": {
       "get": {
-        "summary": "GET /wp3/obligations/{id}/form",
+        "summary": "GET /wp3/projects/{id}/dashboard",
         "tags": [
           "user"
         ],
@@ -22169,9 +22423,9 @@
         }
       }
     },
-    "/wp3/submissions/{id}/validate": {
+    "/wp3/submissions/{id}/transition": {
       "post": {
-        "summary": "POST /wp3/submissions/{id}/validate",
+        "summary": "POST /wp3/submissions/{id}/transition",
         "tags": [
           "user"
         ],
@@ -22219,9 +22473,9 @@
         }
       }
     },
-    "/wp3/submissions/{id}/transition": {
+    "/wp3/submissions/{id}/validate": {
       "post": {
-        "summary": "POST /wp3/submissions/{id}/transition",
+        "summary": "POST /wp3/submissions/{id}/validate",
         "tags": [
           "user"
         ],
@@ -22643,7 +22897,7 @@
       "post": {
         "summary": "POST /queries/{id}/answer",
         "tags": [
-          "admin"
+          "user"
         ],
         "security": [
           {
@@ -22766,6 +23020,60 @@
                 "description": "Validated by service-specific Zod schema. Concrete examples in docs/WORKFLOWS.md."
               }
             }
+          }
+        }
+      }
+    },
+    "/": {
+      "get": {
+        "summary": "GET /",
+        "tags": [
+          "public"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
+          }
+        }
+      }
+    },
+    "/openapi": {
+      "get": {
+        "summary": "GET /openapi",
+        "tags": [
+          "public"
+        ],
+        "security": [],
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Success; see docs/WORKFLOWS.md for response details"
+          },
+          "400": {
+            "description": "Invalid input"
+          },
+          "403": {
+            "description": "Permission denied"
+          },
+          "409": {
+            "description": "Invalid workflow state"
+          },
+          "422": {
+            "description": "Validation failed"
           }
         }
       }

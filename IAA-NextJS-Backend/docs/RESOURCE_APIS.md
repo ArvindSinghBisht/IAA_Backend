@@ -75,4 +75,4 @@ All endpoints start `/api/v1`. Use `/manage/resources/<resource>` for GET/POST a
 
 The checked-in OpenAPI file contains exact writable columns and required fields for each resource. SQL constraints enforce units/ranges/references. State and approval fields are controlled by workflow endpoints.
 
-68 allowlisted resources; 73 explicit workflow/public routes. This is not arbitrary SQL/table access.
+68 allowlisted resources; 82 explicit workflow/public routes. This is not arbitrary SQL/table access.

@@ -1,16 +1,133 @@
-import {readBytes} from '@/lib/request-body';
-import {createHash,randomUUID} from 'node:crypto';
-import {z} from 'zod';
-import {query,transaction} from '@/lib/db';
-import {isGlobal,projectAccess,type Actor} from '@/lib/auth';
-import {admin,audit} from '@/lib/governance';
-import {ApiError,uuid} from '@/lib/http';
-const allowed=new Set(['application/pdf','image/png','image/jpeg','application/json','text/csv','application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
+import * as repository from "@/repositories/files.repository";
+import { readBytes } from "@/lib/request-body";
+import { createHash, randomUUID } from "node:crypto";
+import { z } from "zod";
+import { unitOfWork as transaction } from "@/infrastructure/database/unit-of-work";
+import { isGlobal, projectAccess, type Actor } from "@/lib/auth";
+import { admin, audit } from "@/lib/governance";
+import { ApiError, uuid } from "@/lib/http";
+const allowed = new Set([
+  "application/pdf",
+  "image/png",
+  "image/jpeg",
+  "application/json",
+  "text/csv",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+]);
 
-export async function upload(a:Actor,req:Request){const mime=req.headers.get('content-type')?.split(';')[0]??'';if(!allowed.has(mime))throw new ApiError(415,'FILE_TYPE','PDF, PNG, JPEG, XLSX, CSV or JSON required');const name=z.string().min(1).max(200).parse(req.headers.get('x-file-name'));if(/[\r\n/\\]/.test(name))throw new ApiError(400,'FILENAME','Provide a plain filename');const bytes=await readBytes(req,5242880);if(!bytes.length)throw new ApiError(400,'EMPTY_FILE','File is empty');if(mime==='application/pdf'&&!bytes.subarray(0,5).equals(Buffer.from('%PDF-'))||mime==='image/png'&&!bytes.subarray(0,8).equals(Buffer.from([137,80,78,71,13,10,26,10]))||mime==='image/jpeg'&&!(bytes[0]===255&&bytes[1]===216)||mime.includes('spreadsheetml')&&bytes.subarray(0,2).toString()!=='PK')throw new ApiError(415,'FILE_SIGNATURE','File bytes do not match declared type');return transaction(async c=>{const f=(await c.query('INSERT INTO data.files(object_key,original_name,mime_type,byte_size,sha256,uploaded_by) VALUES($1,$2,$3,$4,$5,$6) RETURNING id,original_name,mime_type,byte_size,scan_status',['database/'+randomUUID(),name,mime,bytes.length,createHash('sha256').update(bytes).digest('hex'),a.id])).rows[0];await c.query('INSERT INTO data.file_payloads(file_id,content) VALUES($1,$2)',[f.id,bytes]);await audit(c,a,'data.files',f.id,'file_uploaded');return f;});}
-export async function reviewFile(a:Actor,id:string,input:unknown){admin(a);uuid.parse(id);const p=z.object({status:z.enum(['clean','rejected']),reason:z.string().trim().min(1).max(2000)}).strict().parse(input);return transaction(async c=>{const f=(await c.query("UPDATE data.files SET scan_status=$2 WHERE id=$1 AND scan_status='pending' RETURNING id,scan_status",[id,p.status])).rows[0];if(!f)throw new ApiError(409,'FILE_STATE','Review requires a pending file');await audit(c,a,'data.files',id,'file_reviewed',{status:p.status,reason:p.reason});return f;});}
-export async function download(a:Actor,id:string){uuid.parse(id);const f=(await query('SELECT f.*,p.content FROM data.files f JOIN data.file_payloads p ON p.file_id=f.id WHERE f.id=$1',[id])).rows[0];if(!f)throw new ApiError(404,'NOT_FOUND','File not found');let permitted=isGlobal(a)||f.uploaded_by===a.id;if(!permitted){const links=(await query(`SELECT v.project_id FROM project.documents d JOIN project.versions v ON v.id=d.project_version_id WHERE d.file_id=$1 UNION SELECT v.project_id FROM mon.evidence e JOIN mon.submission_versions v ON v.id=e.submission_version_id WHERE e.file_id=$1`,[id])).rows;for(const link of links){try{await projectAccess(a,link.project_id,'read');permitted=true;break;}catch(e){if(!(e instanceof ApiError)||e.status!==403)throw e;}}}if(!permitted)throw new ApiError(403,'FILE_ACCESS','File is outside your permitted projects');if(f.scan_status!=='clean'&&!isGlobal(a))throw new ApiError(423,'QUARANTINED','File has not passed review');return new Response(new Uint8Array(f.content),{headers:{'Content-Type':f.mime_type,'Content-Disposition':`attachment; filename="download-${f.id}"`,'X-Content-Type-Options':'nosniff','Cache-Control':'private, no-store'}});}
-export async function publicDownload(id:string){uuid.parse(id);const f=(await query(`SELECT f.mime_type,p.content,f.id FROM data.files f JOIN data.file_payloads p ON p.file_id=f.id WHERE f.id=$1 AND f.scan_status='clean' AND (
- EXISTS(SELECT 1 FROM content.resource_versions rv JOIN data.dataset_versions v ON v.id=rv.dataset_version_id JOIN data.datasets d ON d.id=v.dataset_id WHERE rv.file_id=f.id AND v.status='approved' AND v.is_current AND v.public_allowed AND NOT v.is_demo AND d.is_active)
- OR EXISTS(SELECT 1 FROM content.policy_versions pv JOIN data.dataset_versions v ON v.id=pv.dataset_version_id JOIN data.datasets d ON d.id=v.dataset_id WHERE pv.file_id=f.id AND v.status='approved' AND v.is_current AND v.public_allowed AND NOT v.is_demo AND d.is_active)
- OR EXISTS(SELECT 1 FROM project.documents pd JOIN project.versions v ON v.id=pd.project_version_id JOIN project.projects pr ON pr.id=v.project_id JOIN project.publications pub ON pub.project_version_id=v.id WHERE pd.file_id=f.id AND pd.public_allowed AND v.review_status='approved' AND NOT pr.is_demo AND pr.archived_at IS NULL AND pub.revoked_at IS NULL AND pub.public_fields ? 'documents'))`,[id])).rows[0];if(!f)throw new ApiError(404,'NOT_FOUND','No published file');return new Response(new Uint8Array(f.content),{headers:{'Content-Type':f.mime_type,'Content-Disposition':`attachment; filename="iaa-${f.id}"`,'X-Content-Type-Options':'nosniff','Cache-Control':'no-store'}});}
+export async function upload(a: Actor, req: Request) {
+  const mime = req.headers.get("content-type")?.split(";")[0] ?? "";
+  if (!allowed.has(mime))
+    throw new ApiError(
+      415,
+      "FILE_TYPE",
+      "PDF, PNG, JPEG, XLSX, CSV or JSON required",
+    );
+  const name = z.string().min(1).max(200).parse(req.headers.get("x-file-name"));
+  if (/[\r\n/\\]/.test(name))
+    throw new ApiError(400, "FILENAME", "Provide a plain filename");
+  const bytes = await readBytes(req, 5242880);
+  if (!bytes.length) throw new ApiError(400, "EMPTY_FILE", "File is empty");
+  if (
+    (mime === "application/pdf" &&
+      !bytes.subarray(0, 5).equals(Buffer.from("%PDF-"))) ||
+    (mime === "image/png" &&
+      !bytes
+        .subarray(0, 8)
+        .equals(Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]))) ||
+    (mime === "image/jpeg" && !(bytes[0] === 255 && bytes[1] === 216)) ||
+    (mime.includes("spreadsheetml") && bytes.subarray(0, 2).toString() !== "PK")
+  )
+    throw new ApiError(
+      415,
+      "FILE_SIGNATURE",
+      "File bytes do not match declared type",
+    );
+  return transaction(async (c) => {
+    const f = (
+      await repository.insertDataFiles(
+        [
+          "database/" + randomUUID(),
+          name,
+          mime,
+          bytes.length,
+          createHash("sha256").update(bytes).digest("hex"),
+          a.id,
+        ],
+        c,
+      )
+    ).rows[0];
+    await repository.insertDataFilePayloads([f.id, bytes], c);
+    await audit(c, a, "data.files", f.id, "file_uploaded");
+    return f;
+  });
+}
+export async function reviewFile(a: Actor, id: string, input: unknown) {
+  admin(a);
+  uuid.parse(id);
+  const p = z
+    .object({
+      status: z.enum(["clean", "rejected"]),
+      reason: z.string().trim().min(1).max(2000),
+    })
+    .strict()
+    .parse(input);
+  return transaction(async (c) => {
+    const f = (await repository.updateDataFiles([id, p.status], c)).rows[0];
+    if (!f)
+      throw new ApiError(409, "FILE_STATE", "Review requires a pending file");
+    await audit(c, a, "data.files", id, "file_reviewed", {
+      status: p.status,
+      reason: p.reason,
+    });
+    return f;
+  });
+}
+export async function download(a: Actor, id: string) {
+  uuid.parse(id);
+  const f = (await repository.selectDataFiles([id], undefined)).rows[0];
+  if (!f) throw new ApiError(404, "NOT_FOUND", "File not found");
+  let permitted = isGlobal(a) || f.uploaded_by === a.id;
+  if (!permitted) {
+    const links = (await repository.selectProjectDocuments([id], undefined))
+      .rows;
+    for (const link of links) {
+      try {
+        await projectAccess(a, link.project_id, "read");
+        permitted = true;
+        break;
+      } catch (e) {
+        if (!(e instanceof ApiError) || e.status !== 403) throw e;
+      }
+    }
+  }
+  if (!permitted)
+    throw new ApiError(
+      403,
+      "FILE_ACCESS",
+      "File is outside your permitted projects",
+    );
+  if (f.scan_status !== "clean" && !isGlobal(a))
+    throw new ApiError(423, "QUARANTINED", "File has not passed review");
+  return new Response(new Uint8Array(f.content), {
+    headers: {
+      "Content-Type": f.mime_type,
+      "Content-Disposition": `attachment; filename="download-${f.id}"`,
+      "X-Content-Type-Options": "nosniff",
+      "Cache-Control": "private, no-store",
+    },
+  });
+}
+export async function publicDownload(id: string) {
+  uuid.parse(id);
+  const f = (await repository.selectDataFiles2([id], undefined)).rows[0];
+  if (!f) throw new ApiError(404, "NOT_FOUND", "No published file");
+  return new Response(new Uint8Array(f.content), {
+    headers: {
+      "Content-Type": f.mime_type,
+      "Content-Disposition": `attachment; filename="iaa-${f.id}"`,
+      "X-Content-Type-Options": "nosniff",
+      "Cache-Control": "no-store",
+    },
+  });
+}

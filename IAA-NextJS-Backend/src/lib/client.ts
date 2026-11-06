@@ -1,5 +1,44 @@
 /** Framework-independent client for wiring the existing portal. No credentials belong in browser code. */
-export function createIaaClient(baseUrl='/api/v1',getAccessToken?:()=>Promise<string|undefined>){return {
- async request<T>(path:string,options:{method?:string;body?:unknown;planningToken?:string}={}):Promise<T>{const token=await getAccessToken?.();const headers:Record<string,string>={};if(token)headers.Authorization='Bearer '+token;if(options.planningToken)headers['X-Planning-Token']=options.planningToken;if(options.body!==undefined)headers['Content-Type']='application/json';const res=await fetch(baseUrl+'/'+path.replace(/^\//,''),{method:options.method??'GET',headers,body:options.body===undefined?undefined:JSON.stringify(options.body)});const data=await res.json();if(!res.ok)throw new Error(data.error?.message??'Request failed');return data as T;},
- async upload(file:File){const token=await getAccessToken?.();const res=await fetch(baseUrl+'/files',{method:'POST',headers:{...(token?{Authorization:'Bearer '+token}:{}),'Content-Type':file.type,'X-File-Name':file.name},body:file});const data=await res.json();if(!res.ok)throw new Error(data.error?.message??'Upload failed');return data;}
-};}
+export function createIaaClient(
+  baseUrl = "/api/v1",
+  getAccessToken?: () => Promise<string | undefined>,
+) {
+  return {
+    async request<T>(
+      path: string,
+      options: { method?: string; body?: unknown; planningToken?: string } = {},
+    ): Promise<T> {
+      const token = await getAccessToken?.();
+      const headers: Record<string, string> = {};
+      if (token) headers.Authorization = "Bearer " + token;
+      if (options.planningToken)
+        headers["X-Planning-Token"] = options.planningToken;
+      if (options.body !== undefined)
+        headers["Content-Type"] = "application/json";
+      const res = await fetch(baseUrl + "/" + path.replace(/^\//, ""), {
+        method: options.method ?? "GET",
+        headers,
+        body:
+          options.body === undefined ? undefined : JSON.stringify(options.body),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message ?? "Request failed");
+      return data as T;
+    },
+    async upload(file: File) {
+      const token = await getAccessToken?.();
+      const res = await fetch(baseUrl + "/files", {
+        method: "POST",
+        headers: {
+          ...(token ? { Authorization: "Bearer " + token } : {}),
+          "Content-Type": file.type,
+          "X-File-Name": file.name,
+        },
+        body: file,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error?.message ?? "Upload failed");
+      return data;
+    },
+  };
+}

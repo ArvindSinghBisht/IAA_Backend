@@ -1,8 +1,61 @@
-import {z} from 'zod';
-import {query,transaction} from '@/lib/db';
-import {isGlobal,type Actor} from '@/lib/auth';
-import {admin,audit} from '@/lib/governance';
-import {ApiError,uuid} from '@/lib/http';
-export async function listQueries(a:Actor){return {data:(await query('SELECT q.*,COALESCE((SELECT jsonb_agg(jsonb_build_object(\'answer\',r.answer,\'created_at\',r.created_at)) FROM content.query_responses r WHERE r.query_id=q.id),\'[]\'::jsonb) AS responses FROM content.queries q WHERE $2 OR q.asked_by=$1 ORDER BY q.created_at DESC LIMIT 100',[a.id,isGlobal(a)])).rows};}
-export async function ask(a:Actor,input:unknown){const p=z.object({question:z.string().trim().min(5).max(10000),areaId:uuid.optional(),category:z.string().max(100).optional()}).strict().parse(input);return transaction(async c=>{const q=(await c.query('INSERT INTO content.queries(asked_by,area_id,question,bottleneck_category) VALUES($1,$2,$3,$4) RETURNING id,status',[a.id,p.areaId??null,p.question,p.category??null])).rows[0];await audit(c,a,'content.queries',q.id,'query_created');return q;});}
-export async function answer(a:Actor,id:string,input:unknown){admin(a);uuid.parse(id);const p=z.object({answer:z.string().trim().min(1).max(20000),resourceId:uuid.optional(),close:z.boolean().default(true)}).strict().parse(input);return transaction(async c=>{if(!(await c.query('SELECT 1 FROM content.queries WHERE id=$1 FOR UPDATE',[id])).rowCount)throw new ApiError(404,'NOT_FOUND','Query not found');const q=(await c.query('INSERT INTO content.query_responses(query_id,author_id,resource_id,answer) VALUES($1,$2,$3,$4) RETURNING id',[id,a.id,p.resourceId??null,p.answer])).rows[0];if(p.close)await c.query("UPDATE content.queries SET status='closed' WHERE id=$1",[id]);await audit(c,a,'content.queries',id,'query_answered');return q;});}
+import * as repository from "@/repositories/queries.repository";
+import { z } from "zod";
+import { unitOfWork as transaction } from "@/infrastructure/database/unit-of-work";
+import { isGlobal, type Actor } from "@/lib/auth";
+import { admin, audit } from "@/lib/governance";
+import { ApiError, uuid } from "@/lib/http";
+export async function listQueries(a: Actor) {
+  return {
+    data: (
+      await repository.selectContentQueryResponses(
+        [a.id, isGlobal(a)],
+        undefined,
+      )
+    ).rows,
+  };
+}
+export async function ask(a: Actor, input: unknown) {
+  const p = z
+    .object({
+      question: z.string().trim().min(5).max(10000),
+      areaId: uuid.optional(),
+      category: z.string().max(100).optional(),
+    })
+    .strict()
+    .parse(input);
+  return transaction(async (c) => {
+    const q = (
+      await repository.insertContentQueries(
+        [a.id, p.areaId ?? null, p.question, p.category ?? null],
+        c,
+      )
+    ).rows[0];
+    await audit(c, a, "content.queries", q.id, "query_created");
+    return q;
+  });
+}
+export async function answer(a: Actor, id: string, input: unknown) {
+  admin(a);
+  uuid.parse(id);
+  const p = z
+    .object({
+      answer: z.string().trim().min(1).max(20000),
+      resourceId: uuid.optional(),
+      close: z.boolean().default(true),
+    })
+    .strict()
+    .parse(input);
+  return transaction(async (c) => {
+    if (!(await repository.selectContentQueries([id], c)).rowCount)
+      throw new ApiError(404, "NOT_FOUND", "Query not found");
+    const q = (
+      await repository.insertContentQueryResponses(
+        [id, a.id, p.resourceId ?? null, p.answer],
+        c,
+      )
+    ).rows[0];
+    if (p.close) await repository.updateContentQueries([id], c);
+    await audit(c, a, "content.queries", id, "query_answered");
+    return q;
+  });
+}

@@ -26,3 +26,4 @@ jobs:
         env:
           INTEGRATION_ADMIN_URL: postgresql://iaa_test:test_only_password@localhost:5432/postgres
       - run: npm run build
+      - run: npm run test:production

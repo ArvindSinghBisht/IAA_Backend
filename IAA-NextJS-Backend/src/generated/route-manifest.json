@@ -1,0 +1,822 @@
+[
+  {
+    "method": "GET",
+    "path": "health",
+    "domain": "system",
+    "name": "health",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "ready",
+    "domain": "system",
+    "name": "ready",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/home",
+    "domain": "explorer",
+    "name": "wp1_home",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/search",
+    "domain": "explorer",
+    "name": "wp1_search",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/areas",
+    "domain": "explorer",
+    "name": "wp1_areas",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/features",
+    "domain": "explorer",
+    "name": "wp1_features",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/nearby",
+    "domain": "explorer",
+    "name": "wp1_nearby",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/projects",
+    "domain": "explorer",
+    "name": "wp1_projects",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/projects/[id]",
+    "domain": "explorer",
+    "name": "wp1_projects_id",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/datasets",
+    "domain": "explorer",
+    "name": "wp1_datasets",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/datasets/[id]",
+    "domain": "explorer",
+    "name": "wp1_datasets_id",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/districts/[id]",
+    "domain": "explorer",
+    "name": "wp1_districts_id",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/districts/[id]/[domain]",
+    "domain": "explorer",
+    "name": "wp1_districts_id_domain",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/layers",
+    "domain": "explorer",
+    "name": "wp1_layers",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/layers/[id]/features",
+    "domain": "explorer",
+    "name": "wp1_layers_id_features",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/areas/[id]/boundary",
+    "domain": "explorer",
+    "name": "wp1_areas_id_boundary",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/files/[id]",
+    "domain": "explorer",
+    "name": "wp1_files_id",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/exports/[id]/[resource]",
+    "domain": "explorer",
+    "name": "wp1_exports_id_resource",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "reference/[kind]",
+    "domain": "explorer",
+    "name": "reference_kind",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/resources",
+    "domain": "explorer",
+    "name": "resources",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/policies",
+    "domain": "explorer",
+    "name": "policies",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/demo-project",
+    "domain": "explorer",
+    "name": "demoProject",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/information-layer",
+    "domain": "explorer",
+    "name": "referenceLayer",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp1/information-layer/index",
+    "domain": "explorer",
+    "name": "referenceIndex",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "wp1/compare",
+    "domain": "explorer",
+    "name": "compare",
+    "access": "public",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "wp2/estimate-energy",
+    "domain": "planning",
+    "name": "estimateEnergy",
+    "access": "public",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp2/engines",
+    "domain": "planning",
+    "name": "engines",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "wp2/assessments",
+    "domain": "planning",
+    "name": "createAssessment",
+    "access": "public",
+    "body": true,
+    "status": 201,
+    "limit": true
+  },
+  {
+    "method": "GET",
+    "path": "wp2/assessments/[id]",
+    "domain": "planning",
+    "name": "assessment",
+    "access": "planning",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "wp2/assessments/[id]/scenarios",
+    "domain": "planning",
+    "name": "saveScenario",
+    "access": "planning",
+    "body": true,
+    "status": 201,
+    "limit": true
+  },
+  {
+    "method": "POST",
+    "path": "wp2/assessments/[id]/runs",
+    "domain": "planning",
+    "name": "runScenario",
+    "access": "planning",
+    "body": true,
+    "status": 201,
+    "limit": true
+  },
+  {
+    "method": "GET",
+    "path": "wp2/assessments/[id]/runs",
+    "domain": "planning",
+    "name": "runs",
+    "access": "planning",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp2/assessments/[id]/report",
+    "domain": "planning",
+    "name": "report",
+    "access": "planning",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "auth/me",
+    "domain": "admin",
+    "name": "me",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "internal/projects",
+    "domain": "projects",
+    "name": "projects",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "internal/projects",
+    "domain": "projects",
+    "name": "createProject",
+    "access": "authenticated",
+    "body": true,
+    "status": 201,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "internal/projects/[id]",
+    "domain": "projects",
+    "name": "versions",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "internal/profiles/[id]",
+    "domain": "projects",
+    "name": "profile",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "PATCH",
+    "path": "internal/profiles/[id]",
+    "domain": "projects",
+    "name": "updateProfile",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "internal/profiles/[id]/notes",
+    "domain": "projects",
+    "name": "note",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "internal/profiles/[id]/transition",
+    "domain": "projects",
+    "name": "transition",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "internal/profiles/[id]/revise",
+    "domain": "projects",
+    "name": "revise",
+    "access": "authenticated",
+    "body": true,
+    "status": 201,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "files",
+    "domain": "files",
+    "name": "upload",
+    "access": "authenticated",
+    "body": false,
+    "status": 201,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "files/[id]",
+    "domain": "files",
+    "name": "download",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "files/[id]/review",
+    "domain": "files",
+    "name": "reviewFile",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "manage/resources",
+    "domain": "admin",
+    "name": "resourceDefinitions",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "manage/resources/[resource]",
+    "domain": "admin",
+    "name": "listResources",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "manage/resources/[resource]",
+    "domain": "admin",
+    "name": "createResource",
+    "access": "authenticated",
+    "body": true,
+    "status": 201,
+    "limit": false
+  },
+  {
+    "method": "PATCH",
+    "path": "manage/resources/[resource]/[id]",
+    "domain": "admin",
+    "name": "updateResource",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "DELETE",
+    "path": "manage/resources/[resource]/[id]",
+    "domain": "admin",
+    "name": "deleteResource",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "admin/users",
+    "domain": "admin",
+    "name": "users",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "admin/users",
+    "domain": "admin",
+    "name": "provision",
+    "access": "authenticated",
+    "body": true,
+    "status": 201,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "admin/users/[id]/deactivate",
+    "domain": "admin",
+    "name": "deactivate",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "admin/projects/[id]/memberships",
+    "domain": "admin",
+    "name": "membership",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "admin/audit",
+    "domain": "admin",
+    "name": "audit",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "admin/reminders",
+    "domain": "admin",
+    "name": "reminders",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "admin/datasets/[id]/transition",
+    "domain": "admin",
+    "name": "datasetTransition",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "admin/definitions/[kind]/[id]",
+    "domain": "admin",
+    "name": "definitionApproval",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "admin/imports",
+    "domain": "admin",
+    "name": "importFile",
+    "access": "authenticated",
+    "body": true,
+    "status": 201,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "admin/imports/[id]/rows",
+    "domain": "admin",
+    "name": "importRows",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "admin/issues/[id]/resolve",
+    "domain": "admin",
+    "name": "resolveIssue",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp3/projects/[id]/obligations",
+    "domain": "monitoring",
+    "name": "obligations",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp3/obligations/[id]/form",
+    "domain": "monitoring",
+    "name": "form",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp3/projects/[id]/dashboard",
+    "domain": "monitoring",
+    "name": "dashboard",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "wp3/submissions",
+    "domain": "monitoring",
+    "name": "create",
+    "access": "authenticated",
+    "body": true,
+    "status": 201,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp3/submissions/[id]",
+    "domain": "monitoring",
+    "name": "submission",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "PUT",
+    "path": "wp3/submissions/[id]/values",
+    "domain": "monitoring",
+    "name": "saveValue",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "wp3/submissions/[id]/transition",
+    "domain": "monitoring",
+    "name": "transition",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "wp3/submissions/[id]/validate",
+    "domain": "monitoring",
+    "name": "validate",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "wp3/submissions/[id]/correct",
+    "domain": "monitoring",
+    "name": "correct",
+    "access": "authenticated",
+    "body": true,
+    "status": 201,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "wp3/submissions/[id]/release",
+    "domain": "monitoring",
+    "name": "release",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp3/submissions/[id]/history",
+    "domain": "monitoring",
+    "name": "history",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "wp3/submissions/[id]/records/[kind]",
+    "domain": "monitoring",
+    "name": "records",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "wp3/submissions/[id]/records/[kind]",
+    "domain": "monitoring",
+    "name": "addRecord",
+    "access": "authenticated",
+    "body": true,
+    "status": 201,
+    "limit": false
+  },
+  {
+    "method": "DELETE",
+    "path": "wp3/submissions/[id]/records/[kind]/[recordId]",
+    "domain": "monitoring",
+    "name": "deleteRecord",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "queries",
+    "domain": "learning",
+    "name": "queries",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "queries",
+    "domain": "learning",
+    "name": "ask",
+    "access": "authenticated",
+    "body": true,
+    "status": 201,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "queries/[id]/answer",
+    "domain": "learning",
+    "name": "answer",
+    "access": "authenticated",
+    "body": true,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "notifications",
+    "domain": "learning",
+    "name": "notifications",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "POST",
+    "path": "notifications/[id]/read",
+    "domain": "learning",
+    "name": "read",
+    "access": "authenticated",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "",
+    "domain": "documentation",
+    "name": "index",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  },
+  {
+    "method": "GET",
+    "path": "openapi",
+    "domain": "documentation",
+    "name": "specification",
+    "access": "public",
+    "body": false,
+    "status": 200,
+    "limit": false
+  }
+]
